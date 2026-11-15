@@ -1,4 +1,3 @@
-/* Small label packs for the QR page and the skip/sound buttons (one per site language). */
 const GT={
  "en": {
   "q": {

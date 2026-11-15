@@ -1,21 +1,22 @@
-/* Language of the game pages. The game text is written in Russian; DUNE_DICT maps it (numbers as {n}) to English and
- * Tajik. The engine translates text nodes, a few attributes and canvas text, and follows DOM changes, so every
- * mini-game screen, button and result card switches language with the site. */
 (function () {
   "use strict";
   var IDX = { en: 0, tg: 1 }, lang = "ru", D = window.DUNE_DICT || {};
   var NUM = /-?\d+(?:\.\d+)?/g, ATTR = ["title", "aria-label", "placeholder", "alt"];
-  var seen = typeof WeakMap === "function" ? new WeakMap() : null; // node -> {src, out}
-  var cache = {};
+  var seen = typeof WeakMap === "function" ? new WeakMap() : null;
+  var cache = {}, D2 = {};
+  (function () {
+    var re = /^[\s\u200d\ufe0f\u2190-\u21ff\u25b6\u25c0\u2600-\u27bf\u{1F000}-\u{1FAFF}]+|[\s\u200d\ufe0f\u2190-\u21ff\u25b6\u25c0\u2600-\u27bf\u{1F000}-\u{1FAFF}]+$/gu;
+    try { for (var k in D) { var k2 = k.replace(re, ""); if (k2 !== k && k2 && !D[k2] && /[А-Яа-яЁё]/.test(k2)) { var e = D[k]; D2[k2] = [(e[0] || "").replace(re, ""), (e[1] || "").replace(re, "")]; } } } catch (x) {}
+  })();
 
   function tr(s) {
     if (lang === "ru" || typeof s !== "string" || !/[А-Яа-яЁё]/.test(s)) return s;
     var ck = lang + "|" + s; if (cache[ck] !== undefined) return cache[ck];
     var lead = s.match(/^\s*/)[0], tail = s.match(/\s*$/)[0], core = s.trim(), nums = core.match(NUM) || [];
-    var key = core.replace(NUM, "{n}").replace(/\s+/g, " "), e = D[key], out = s;
+    var key = core.replace(NUM, "{n}").replace(/\s+/g, " "), e = D[key] || D2[key], out = s;
     if (e) { var i = 0; out = lead + e[IDX[lang]].replace(/\{n\}/g, function () { return nums[i++] || ""; }) + tail; }
     else {
-      /* a line made of several known parts joined by line breaks / bullets */
+
       var parts = core.split(/\n+/);
       if (parts.length > 1) out = lead + parts.map(function (p) { return tr(p.trim()); }).join("\n") + tail;
     }
@@ -46,7 +47,7 @@
     if (root.nodeType === 1) { var t = root.tagName; if (t === "SCRIPT" || t === "STYLE") return; attrs(root); }
     for (var c = root.firstChild; c; c = c.nextSibling) walk(c);
   }
-  /* restore Russian originals when the language goes back to ru */
+
   function restore() {
     document.querySelectorAll("[data-ru-title],[data-ru-aria-label],[data-ru-placeholder],[data-ru-alt]").forEach(attrs);
   }
@@ -65,7 +66,6 @@
     mo.observe(document.documentElement, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ATTR });
   }
 
-  /* canvas text goes through the same dictionary */
   var P = window.CanvasRenderingContext2D && CanvasRenderingContext2D.prototype;
   if (P) ["fillText", "strokeText", "measureText"].forEach(function (f) {
     var o = P[f]; if (!o) return;
@@ -79,7 +79,7 @@
     document.documentElement.setAttribute("data-dl", l);
     document.documentElement.lang = l === "tg" ? "tg" : l;
     if (prev !== "ru" || l !== "ru") {
-      /* nodes translated earlier are re-derived from their Russian source */
+
       var w = document.createTreeWalker(document.documentElement, NodeFilter.SHOW_TEXT, null), n, list = [];
       while ((n = w.nextNode())) list.push(n);
       list.forEach(text);

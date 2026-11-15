@@ -36,7 +36,7 @@ def draw_card(c, x, y, code, topic, url):
     c.roundRect(x, y, CW, CH, 4 * mm)
     c.setFillColorRGB(0.77, 0.34, 0.18)
     c.setFont("Helvetica-Bold", 7)
-    c.drawString(x + 6 * mm, y + CH - 8 * mm, "MISSION: MARS  /  " + ascii_text(topic["cat"]["en"]).upper())
+    c.drawString(x + 6 * mm, y + CH - 8 * mm, "MISSION MARS  /  " + ascii_text(topic["cat"]["en"]).upper())
     c.setFillColorRGB(0.07, 0.03, 0.06)
     c.setFont("Helvetica-Bold", 13)
     ty = y + CH - 16 * mm
@@ -72,7 +72,7 @@ def main():
     info = load_info()
     OUT.mkdir(parents=True, exist_ok=True)
     c = canvas.Canvas(str(OUT / "cards.pdf"), pagesize=A4)
-    c.setTitle("MISSION: MARS QR cards")
+    c.setTitle("MISSION MARS QR cards")
     per_page, left, top = 8, (A4[0] - 2 * CW) / 2, A4[1] - 14 * mm
     for i, code in enumerate(sorted(info)):
         k = i % per_page

@@ -53,7 +53,7 @@ def main():
     text, n = re.subn(r'const VERSION="[^"]*";', 'const VERSION="%s";' % version, text)
     assert n == 1, "VERSION line not found in sw.js"
     sw.write_text(text, encoding="utf8")
-    cache = ["./"] + [f for f in files if f != "sw.js"]
+    cache = ["./"] + [f for f in files if f != "sw.js" and not f.startswith("assets/video/")]
     (DIST / "precache.json").write_text(json.dumps({"version": version, "files": cache}, indent=1), encoding="utf8")
     size = sum((DIST / f).stat().st_size for f in files)
     by_ext = {}

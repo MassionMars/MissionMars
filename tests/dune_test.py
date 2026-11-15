@@ -1,4 +1,4 @@
-"""Browser test of the Mars Dune Alpha game inside the site.
+"""Browser test of the MISSION MARS game inside the site.
 
     python tests/dune_test.py http://localhost:8133/            (serve dist/ first)
     python tests/dune_test.py file:///.../index.html            (the one-file build)
@@ -39,7 +39,7 @@ with sync_playwright() as p:
     ok(pg.locator(".cta-row .cta").count() == 2 and pg.locator(".cta.play").count() == 1, "home has the Play button and then the About button")
     ok(pg.eval_on_selector(".cta.play", "e=>e.textContent.trim().length>0"), "Play button has a label")
     nav = pg.eval_on_selector_all("#bar button", "bs=>bs.map(b=>b.dataset.go)")
-    ok(nav == ["home", "about", "inside", "game", "qr", "album"], "bottom menu is home/about/inside/game/qr/album, got %s" % nav)
+    ok(nav == ["home", "about", "inside", "game", "album"], "bottom menu is home/about/inside/game/album, got %s" % nav)
     ok(pg.evaluate("typeof MMEngine==='undefined'&&!document.getElementById('p-mini')&&!document.getElementById('mgsw')"), "old game engine, mini-games page and switcher are gone")
     # the home sky: stars, no hard-edged background boxes, meteors that can be caught
     ok(pg.evaluate("!document.querySelector('.hero .bl,.blob,.flare,.dust')"), "the boxed glow/dust layers (hard edges) are gone")
@@ -49,7 +49,7 @@ with sync_playwright() as p:
     ok(pg.evaluate("localStorage.getItem('mm-meteors')") == "1", "a meteor can be caught with a tap")
     pg.click('#bar [data-go="game"]')
     ctl = child(pg, "Mission control")
-    ctl.evaluate("()=>document.querySelector('.skip button').click()"); pg.wait_for_timeout(200)
+    ctl.evaluate("()=>document.querySelector('.vfx-foot button,.skip button').click()"); pg.wait_for_timeout(200)
     ctl.fill(".inp", "Tester<b>_1"); ctl.evaluate("()=>[...document.querySelectorAll('button')].find(x=>x.textContent.includes('Начать')).click()")
     pg.wait_for_timeout(300)
     ok(pg.evaluate("JSON.parse(localStorage.getItem('mm-camp')).nick") == "Testerb_1", "nickname is cleaned and saved")
@@ -82,13 +82,13 @@ with sync_playwright() as p:
     # records board, language, audio buttons
     hub.evaluate("()=>DuneBridge.mini('3A',5,true,5,3)")
     pg.wait_for_timeout(300)
-    pg.click(".dbtn:has-text('🏆')"); pg.wait_for_timeout(300)
+    pg.click(".dtools .dbtn >> nth=2"); pg.wait_for_timeout(300)
     ok(pg.locator(".drow.free").count() >= 1, "records board has free places for future records")
     pg.click(".dtab >> nth=1"); pg.wait_for_timeout(200)
     ok(pg.locator(".dbox").count() == 16 and "Testerb_1" in pg.inner_text(".dgrid"), "16 mini-game records, the winner is listed")
     pg.keyboard.press("Escape")
     ok(pg.locator("#tokens .res").count() == 3, "home shows three resources: life, energy, shield")
-    ok(pg.eval_on_selector_all("#chips .chip", "bs=>bs.length") == 4, "Inside the game keeps four tabs: story, rules, cards, QR")
+    ok(pg.eval_on_selector_all("#chips .chip", "bs=>bs.length") == 4 and pg.locator(".mgc").count() == 16 and pg.locator(".kbcard").count() == 1, "Inside the game: story, rules, Knowledge Base, mini-games, 16 mini-game cards")
     ok(pg.locator("#langs button").count() == 3, "only three languages: %s" % pg.eval_on_selector_all("#langs button", "bs=>bs.map(b=>b.dataset.l)"))
     pg.click('#langs [data-l="en"]'); pg.wait_for_timeout(500)
     hub = child(pg, "Base") if False else next(f for f in pg.frames if f != pg.main_frame)
@@ -108,7 +108,7 @@ with sync_playwright() as p:
     pg.click("#mus"); pg.click("#snd")
     # other pages still work
     for pid in ("qr", "inside", "about", "home"):
-        pg.click('#bar [data-go="%s"]' % pid) if pid != "home" else pg.evaluate("go('home')")
+        pg.evaluate("go('%s')" % pid)
         pg.wait_for_timeout(250)
         ok(pg.evaluate("document.getElementById('p-%s').classList.contains('on')" % pid), "page %s opens" % pid)
     # phone

@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>MISSION MARS — Шлюз</title>
+<link rel="stylesheet" href="dune-font.css">
+<link rel="stylesheet" href="dune.css">
+<link rel="stylesheet" href="airlock.css">
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="dune-skin.css">
+<link rel="stylesheet" href="holo.css">
+<link rel="stylesheet" href="chars.css">
+</head>
+<body class="relative w-screen h-screen overflow-hidden select-none">
+
+  <section id="airlock-compartment-screen" class="relative w-full h-full bg-[#1e293b]">
+
+    <div class="fixed top-3 left-4 right-4 z-50 flex flex-wrap items-center justify-between gap-3 pointer-events-none">
+
+      <div class="flex items-center gap-3 pointer-events-auto">
+        <button
+          onclick="backToBase()"
+          class="flex items-center gap-2.5 px-5 sm:px-6 py-2.5 sm:py-3 rounded-full bg-[#fffdf9] hover:bg-[#ffe8c2] active:scale-95 text-[#231815] font-extrabold text-base sm:text-xl border-[4px] border-[#231815] shadow-[0_5px_0_#231815] transition cursor-pointer"
+        >
+          <span class="text-xl sm:text-2xl leading-none">←</span>
+          <span>Назад на базу</span>
+        </button>
+
+        <div class="flex items-center gap-2.5 px-5 sm:px-6 py-2.5 sm:py-3 rounded-full bg-[#fffdf9] border-[4px] border-[#231815] shadow-[0_5px_0_#231815]">
+          <span class="text-xl sm:text-2xl leading-none">🚪</span>
+          <span class="font-extrabold text-base sm:text-xl text-[#231815] tracking-wide">AIRLOCK / ШЛЮЗ</span>
+        </div>
+      </div>
+
+      <div class="pointer-events-auto flex items-center gap-2.5 bg-[#fffdf9]/95 p-2 rounded-3xl border-[4px] border-[#231815] shadow-[0_5px_0_#231815]">
+        <button
+          id="tab-crisis-4a"
+          onclick="selectAirlockCrisis('4A')"
+          class="px-4 sm:px-5 py-2 sm:py-2.5 rounded-2xl font-extrabold text-sm sm:text-lg border-[3px] border-[#231815] bg-[#f59e0b] text-[#231815] shadow-[0_3px_0_#231815] transition cursor-pointer"
+        >
+          🌪️ Кризис 4А: Буря и панели
+        </button>
+        <button
+          id="tab-crisis-4b"
+          onclick="selectAirlockCrisis('4B')"
+          class="px-4 sm:px-5 py-2 sm:py-2.5 rounded-2xl font-extrabold text-sm sm:text-lg border-[3px] border-transparent hover:border-[#231815] bg-[#f1f5f9] text-[#475569] transition cursor-pointer"
+        >
+          🚨 Кризис 4Б: Давление в шлюзе
+        </button>
+      </div>
+
+      <div class="pointer-events-auto flex flex-wrap items-center gap-2 sm:gap-2.5 bg-[#fffdf9]/95 px-4 sm:px-5 py-2 sm:py-2.5 rounded-3xl border-[4px] border-[#231815] shadow-[0_5px_0_#231815] text-base sm:text-xl font-extrabold">
+        <div class="relative flex items-center gap-1.5 px-3 py-1 rounded-2xl bg-[#dcfce7] border-[3px] border-[#231815] text-[#14532d]" title="Жизнь">
+          <span>❤️</span><span id="hud-life">70</span>
+          <div id="float-life" class="hidden absolute -bottom-8 left-1/2 -translate-x-1/2 font-black text-base sm:text-lg"></div>
+        </div>
+        <div class="relative flex items-center gap-1.5 px-3 py-1 rounded-2xl bg-[#fef9c3] border-[3px] border-[#231815] text-[#713f12]" title="Энергия">
+          <span>⚡</span><span id="hud-energy">80</span>
+          <div id="float-energy" class="hidden absolute -bottom-8 left-1/2 -translate-x-1/2 font-black text-base sm:text-lg"></div>
+        </div>
+        <div class="relative flex items-center gap-1.5 px-3 py-1 rounded-2xl bg-[#dbeafe] border-[3px] border-[#231815] text-[#1e3a8a]" title="Щит">
+          <span>🛡️</span><span id="hud-shield">75</span>
+          <div id="float-shield" class="hidden absolute -bottom-8 left-1/2 -translate-x-1/2 font-black text-base sm:text-lg"></div>
+        </div>
+        <div class="relative flex items-center gap-1.5 px-3 py-1 rounded-2xl bg-[#f3e8ff] border-[3px] border-[#231815] text-[#581887] hidden" title="Наука">
+          <span>🧬</span><span id="hud-science">10</span>
+          <div id="float-science" class="hidden absolute -bottom-8 left-1/2 -translate-x-1/2 font-black text-base sm:text-lg"></div>
+        </div>
+        <span id="hud-hearts" class="flex items-center gap-1 px-3 py-1 rounded-2xl bg-[#ffe4e6] border-[3px] border-[#231815]">
+          ❤️❤️❤️
+        </span>
+      </div>
+    </div>
+
+    <div id="airlock-bg-layer" class="w-full h-full">
+      <svg
+        id="airlock-scene-svg"
+        viewBox="0 0 1600 1000"
+        class="w-full h-full block"
+        preserveAspectRatio="xMidYMid slice"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <defs>
+
+          <linearGradient id="airSkyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#d98a6c" />
+            <stop offset="60%" stop-color="#e8ab8e" />
+            <stop offset="100%" stop-color="#f4c8b0" />
+          </linearGradient>
+
+          <linearGradient id="airMarsGroundGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#d4724a" />
+            <stop offset="55%" stop-color="#bd5932" />
+            <stop offset="100%" stop-color="#963f1e" />
+          </linearGradient>
+
+          <radialGradient id="airSunGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#fffef5" stop-opacity="1" />
+            <stop offset="40%" stop-color="#fff2cf" stop-opacity="0.9" />
+            <stop offset="75%" stop-color="#f7c49c" stop-opacity="0.35" />
+            <stop offset="100%" stop-color="#e8ad96" stop-opacity="0" />
+          </radialGradient>
+
+          <linearGradient id="airWallGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#cfc5ba" />
+            <stop offset="100%" stop-color="#9e9286" />
+          </linearGradient>
+          <linearGradient id="airFloorGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#b5a89b" />
+            <stop offset="100%" stop-color="#7d7268" />
+          </linearGradient>
+        </defs>
+
+        <rect x="-40" y="-20" width="1680" height="230" fill="url(#airSkyGrad)" />
+
+        <g class="mars-sun-drift">
+          <g transform="translate(1245, 92)" class="sun-glow">
+            <circle cx="0" cy="0" r="80" fill="url(#airSunGlow)" />
+            <circle cx="0" cy="0" r="24" fill="#fffef4" />
+          </g>
+        </g>
+
+        <path
+          d="M -40 202 L 135 174 L 310 196 L 510 168 L 740 194 L 980 172 L 1190 195 L 1410 170 L 1640 192 L 1640 230 L -40 230 Z"
+          fill="#c26440"
+          stroke="#231815"
+          stroke-width="2.8"
+        />
+
+        <path
+          d="M -40 210 Q 280 195 580 208 T 1190 204 T 1640 202 L 1640 410 L -40 410 Z"
+          fill="url(#airMarsGroundGrad)"
+          stroke="#231815"
+          stroke-width="3"
+        />
+
+        <g>
+
+          <g transform="translate(1310, 225)">
+            <rect x="0" y="0" width="76" height="52" rx="6" fill="#d6c7b8" stroke="#231815" stroke-width="2.5" />
+            <rect x="8" y="8" width="60" height="16" rx="3" fill="#9c8b7a" stroke="#231815" stroke-width="2" />
+            <circle cx="24" cy="36" r="8" fill="#ef4444" stroke="#231815" stroke-width="2" />
+            <circle cx="52" cy="36" r="5" fill="#4ade80" class="led-blink" />
+          </g>
+
+          <g transform="translate(155, 232)">
+            <polygon points="0,24 55,0 120,24 65,48" fill="#3c5a78" stroke="#231815" stroke-width="2.5" />
+            <polygon class="ext-panel-sand" points="4,24 55,3 116,24 65,45" fill="#d97706" opacity="0.72" />
+          </g>
+          <g transform="translate(285, 242)">
+            <polygon points="0,24 55,0 120,24 65,48" fill="#3c5a78" stroke="#231815" stroke-width="2.5" />
+            <polygon class="ext-panel-sand" points="4,24 55,3 116,24 65,45" fill="#d97706" opacity="0.72" />
+          </g>
+          <g transform="translate(415, 232)">
+            <polygon points="0,24 55,0 120,24 65,48" fill="#3c5a78" stroke="#231815" stroke-width="2.5" />
+            <polygon class="ext-panel-sand" points="4,24 55,3 116,24 65,45" fill="#d97706" opacity="0.72" />
+          </g>
+        </g>
+
+        <g id="mars-footprints-layer"></g>
+
+        <g id="mars-surface-astronauts">
+
+          <g id="surface-astro-1" transform="translate(360, 298)">
+            <ellipse cx="0" cy="28" rx="14" ry="5.5" fill="#5e2210" opacity="0.48" />
+            <g class="astro-walk-cycle">
+              <rect x="-12" y="-12" width="12" height="20" rx="3" fill="#cbd5e1" stroke="#231815" stroke-width="2.2" />
+              <rect x="-7" y="8" width="6.5" height="19" rx="3" fill="#f1f5f9" stroke="#231815" stroke-width="2.2" />
+              <rect x="1.5" y="8" width="6.5" height="19" rx="3" fill="#f1f5f9" stroke="#231815" stroke-width="2.2" />
+              <rect x="-9" y="-14" width="18" height="24" rx="6" fill="#f8fafc" stroke="#231815" stroke-width="2.2" />
+              <circle cx="0" cy="-23" r="10.5" fill="#f8fafc" stroke="#231815" stroke-width="2.2" />
+              <ellipse id="astro1-visor" cx="4" cy="-23" rx="6" ry="5" fill="#f59e0b" stroke="#231815" stroke-width="1.6" />
+
+              <line x1="6" y1="-2" x2="18" y2="12" stroke="#231815" stroke-width="3" />
+              <rect x="14" y="10" width="9" height="5" rx="1.5" fill="#38bdf8" stroke="#231815" stroke-width="1.5" />
+            </g>
+          </g>
+
+          <g id="surface-astro-2" transform="translate(1080, 324)">
+            <ellipse cx="0" cy="28" rx="14" ry="5.5" fill="#5e2210" opacity="0.48" />
+            <g class="astro-walk-cycle" style="animation-delay: -0.45s;">
+              <rect x="0" y="-12" width="12" height="20" rx="3" fill="#cbd5e1" stroke="#231815" stroke-width="2.2" />
+              <rect x="-7" y="8" width="6.5" height="19" rx="3" fill="#f1f5f9" stroke="#231815" stroke-width="2.2" />
+              <rect x="1.5" y="8" width="6.5" height="19" rx="3" fill="#f1f5f9" stroke="#231815" stroke-width="2.2" />
+              <rect x="-9" y="-14" width="18" height="24" rx="6" fill="#f8fafc" stroke="#231815" stroke-width="2.2" />
+              <circle cx="0" cy="-23" r="10.5" fill="#f8fafc" stroke="#231815" stroke-width="2.2" />
+              <ellipse id="astro2-visor" cx="-4" cy="-23" rx="6" ry="5" fill="#38bdf8" stroke="#231815" stroke-width="1.6" />
+
+              <rect x="-15" y="-5" width="11" height="9" rx="3" fill="#c25e34" stroke="#231815" stroke-width="1.6" />
+            </g>
+          </g>
+        </g>
+
+        <g id="storm-wind-visual">
+          <path d="M 180 140 H 480 M 650 260 H 980 M 1120 175 H 1490 M 320 310 H 720" stroke="#f59e0b" stroke-width="6" stroke-linecap="round" opacity="0.4" class="storm-gust" />
+          <path d="M 420 110 H 780 M 920 295 H 1320" stroke="#fb923c" stroke-width="4" stroke-linecap="round" opacity="0.35" class="storm-gust" style="animation-delay: -1.4s;" />
+        </g>
+
+        <rect x="0" y="0" width="1600" height="385" fill="#fde68a" opacity="0.12" pointer-events="none" />
+        <g fill="none" stroke="#231815" stroke-width="4" pointer-events="none">
+          <path d="M -20 380 Q 800 190 1620 380" stroke="#d6cfc7" stroke-width="16" />
+          <path d="M -20 380 Q 800 190 1620 380" stroke="#231815" stroke-width="4" />
+          <path d="M -20 205 Q 800 25 1620 205" stroke="#d6cfc7" stroke-width="11" />
+          <path d="M -20 205 Q 800 25 1620 205" stroke="#231815" stroke-width="3.5" />
+          <line x1="250" y1="0" x2="105" y2="365" stroke="#cbd5e1" stroke-width="9" />
+          <line x1="250" y1="0" x2="105" y2="365" stroke="#231815" stroke-width="3" />
+          <line x1="800" y1="0" x2="800" y2="285" stroke="#cbd5e1" stroke-width="9" />
+          <line x1="800" y1="0" x2="800" y2="285" stroke="#231815" stroke-width="3" />
+          <line x1="1350" y1="0" x2="1495" y2="365" stroke="#cbd5e1" stroke-width="9" />
+          <line x1="1350" y1="0" x2="1495" y2="365" stroke="#231815" stroke-width="3" />
+        </g>
+
+        <rect x="0" y="370" width="1600" height="410" fill="url(#airWallGrad)" stroke="#231815" stroke-width="4" />
+        <polygon points="0,780 1600,780 1600,1000 0,1000" fill="url(#airFloorGrad)" stroke="#231815" stroke-width="4" />
+
+        <rect x="0" y="762" width="1600" height="18" fill="#facc15" stroke="#231815" stroke-width="3" />
+        <path d="M 50 762 L 30 780 M 150 762 L 130 780 M 250 762 L 230 780 M 350 762 L 330 780 M 450 762 L 430 780 M 550 762 L 530 780 M 650 762 L 630 780 M 750 762 L 730 780 M 850 762 L 830 780 M 950 762 L 930 780 M 1050 762 L 1030 780 M 1150 762 L 1130 780 M 1250 762 L 1230 780 M 1350 762 L 1330 780 M 1450 762 L 1430 780 M 1550 762 L 1530 780" stroke="#231815" stroke-width="6" />
+
+        <rect x="0" y="355" width="1600" height="22" fill="#78716c" stroke="#231815" stroke-width="3.5" />
+
+        <g transform="translate(55, 415)">
+          <rect x="0" y="0" width="355" height="330" rx="14" fill="#475569" stroke="#231815" stroke-width="4" />
+          <rect x="16" y="16" width="323" height="34" rx="6" fill="#1e293b" stroke="#231815" stroke-width="2.5" />
+          <text x="34" y="38" fill="#facc15" font-size="14" font-weight="800" font-family="MMSans">EVA SUIT STATION &amp; TOOLS</text>
+
+          <rect x="24" y="64" width="142" height="245" rx="10" fill="#1e293b" stroke="#231815" stroke-width="3" />
+          <rect x="188" y="64" width="142" height="245" rx="10" fill="#1e293b" stroke="#231815" stroke-width="3" />
+
+          <g transform="translate(95, 165)">
+            <circle cx="0" cy="-58" r="24" fill="#f8fafc" stroke="#231815" stroke-width="3" />
+            <ellipse cx="0" cy="-58" rx="15" ry="11" fill="#38bdf8" stroke="#231815" stroke-width="2.2" />
+            <rect x="-28" y="-30" width="56" height="68" rx="12" fill="#f8fafc" stroke="#231815" stroke-width="3" />
+            <rect x="-16" y="-16" width="32" height="24" rx="4" fill="#94a3b8" stroke="#231815" stroke-width="2" />
+            <rect x="-22" y="38" width="18" height="58" rx="6" fill="#e2e8f0" stroke="#231815" stroke-width="3" />
+            <rect x="4" y="38" width="18" height="58" rx="6" fill="#e2e8f0" stroke="#231815" stroke-width="3" />
+          </g>
+
+          <g transform="translate(259, 165)">
+            <circle cx="0" cy="-58" r="24" fill="#f8fafc" stroke="#231815" stroke-width="3" />
+            <ellipse cx="0" cy="-58" rx="15" ry="11" fill="#f59e0b" stroke="#231815" stroke-width="2.2" />
+            <rect x="-28" y="-30" width="56" height="68" rx="12" fill="#f8fafc" stroke="#231815" stroke-width="3" />
+            <rect x="-16" y="-16" width="32" height="24" rx="4" fill="#94a3b8" stroke="#231815" stroke-width="2" />
+            <rect x="-22" y="38" width="18" height="58" rx="6" fill="#e2e8f0" stroke="#231815" stroke-width="3" />
+            <rect x="4" y="38" width="18" height="58" rx="6" fill="#e2e8f0" stroke="#231815" stroke-width="3" />
+          </g>
+        </g>
+
+        <g transform="translate(800, 575)">
+
+          <circle cx="0" cy="0" r="168" fill="#e5ddd3" stroke="#231815" stroke-width="4.5" />
+          <circle cx="0" cy="0" r="138" fill="#c7b9aa" stroke="#231815" stroke-width="4" />
+
+          <line x1="0" y1="-138" x2="0" y2="138" stroke="#231815" stroke-width="4" />
+
+          <circle cx="-48" cy="-15" r="34" fill="#38bdf8" stroke="#231815" stroke-width="3.5" />
+
+          <circle cx="48" cy="0" r="28" fill="#f59e0b" stroke="#231815" stroke-width="3.5" />
+          <line x1="20" y1="0" x2="76" y2="0" stroke="#231815" stroke-width="5" />
+          <line x1="48" y1="-28" x2="48" y2="28" stroke="#231815" stroke-width="5" />
+          <circle cx="48" cy="0" r="9" fill="#fffdf9" stroke="#231815" stroke-width="2.5" />
+
+          <rect x="-55" y="-196" width="110" height="32" rx="8" fill="#1e293b" stroke="#231815" stroke-width="3" />
+          <rect id="airlock-top-light" x="-45" y="-188" width="90" height="16" rx="4" fill="#4ade80" class="led-blink" />
+        </g>
+
+        <g id="hull-breach-visual" class="hidden">
+          <g transform="translate(555, 485)">
+            <circle cx="0" cy="0" r="32" fill="#ef4444" opacity="0.28" class="led-blink-fast" />
+            <path d="M -18 -22 L 4 -4 L -6 12 L 16 26 M 4 -4 L 22 -12" fill="none" stroke="#ef4444" stroke-width="5" stroke-linecap="round" />
+            <path d="M -18 -22 L 4 -4 L -6 12 L 16 26 M 4 -4 L 22 -12" fill="none" stroke="#231815" stroke-width="2" stroke-linecap="round" />
+          </g>
+          <g transform="translate(1045, 520)">
+            <circle cx="0" cy="0" r="32" fill="#ef4444" opacity="0.28" class="led-blink-fast" />
+            <path d="M 15 -24 L -5 -2 L 8 14 L -14 28" fill="none" stroke="#ef4444" stroke-width="5" stroke-linecap="round" />
+            <path d="M 15 -24 L -5 -2 L 8 14 L -14 28" fill="none" stroke="#231815" stroke-width="2" stroke-linecap="round" />
+          </g>
+        </g>
+
+        <g transform="translate(1135, 425)">
+
+          <rect x="0" y="0" width="395" height="155" rx="14" fill="#1e293b" stroke="#231815" stroke-width="4" />
+          <rect x="16" y="16" width="220" height="123" rx="8" fill="#0f172a" stroke="#231815" stroke-width="2.5" />
+          <text x="30" y="40" fill="#38bdf8" font-size="13" font-weight="800" font-family="MMSans">AIRLOCK KPA &amp; SOLAR ARRAY</text>
+
+          <rect x="30" y="55" width="160" height="14" rx="4" fill="#4ade80" />
+          <rect x="30" y="80" width="125" height="14" rx="4" fill="#facc15" />
+          <rect x="30" y="105" width="185" height="14" rx="4" fill="#38bdf8" />
+
+          <circle cx="315" cy="78" r="46" fill="#f8fafc" stroke="#231815" stroke-width="3.5" />
+          <path d="M 285 95 A 36 36 0 1 1 345 95" fill="none" stroke="#22c55e" stroke-width="6" />
+          <line x1="315" y1="78" x2="338" y2="54" stroke="#dc2626" stroke-width="4" stroke-linecap="round" />
+          <circle cx="315" cy="78" r="6" fill="#231815" />
+
+          <rect x="15" y="195" width="370" height="135" rx="12" fill="#9a3412" stroke="#231815" stroke-width="4" />
+          <rect x="32" y="212" width="102" height="52" rx="8" fill="#d97706" stroke="#231815" stroke-width="3" />
+          <rect x="148" y="212" width="102" height="52" rx="8" fill="#d97706" stroke="#231815" stroke-width="3" />
+          <rect x="264" y="212" width="102" height="52" rx="8" fill="#d97706" stroke="#231815" stroke-width="3" />
+          <rect x="32" y="278" width="334" height="34" rx="6" fill="#7c2d12" stroke="#231815" stroke-width="2.5" />
+          <text x="85" y="300" fill="#fef08a" font-size="13" font-weight="800" font-family="MMSans">REGOLITH SHIELD PLATES</text>
+        </g>
+
+        <g class="npc-engineer" transform="translate(1075, 675)">
+          <ellipse cx="0" cy="105" rx="34" ry="12" fill="#231815" opacity="0.28" />
+          <rect x="-18" y="38" width="14" height="58" rx="5" fill="#e2e8f0" stroke="#231815" stroke-width="3" />
+          <rect x="4" y="38" width="14" height="58" rx="5" fill="#e2e8f0" stroke="#231815" stroke-width="3" />
+          <rect x="-26" y="-26" width="52" height="68" rx="12" fill="#f8fafc" stroke="#231815" stroke-width="3" />
+
+          <rect x="-18" y="-18" width="36" height="46" rx="6" fill="#cbd5e1" stroke="#231815" stroke-width="3" />
+          <circle cx="-6" cy="12" r="4" fill="#4ade80" class="led-blink" />
+          <circle cx="6" cy="12" r="4" fill="#38bdf8" />
+
+          <circle cx="0" cy="-48" r="22" fill="#f8fafc" stroke="#231815" stroke-width="3" />
+        </g>
+      </svg>
+    </div>
+
+    <div id="minigame-mount-point" class="fixed inset-0 z-40 flex items-center justify-center p-4 pt-20 pointer-events-none">
+
+      <div
+        id="airlock-dilemma-card"
+        class="pointer-events-auto w-full max-w-4xl bg-[#fffdf9]/95 border-[4px] border-[#231815] rounded-3xl p-5 sm:p-7 shadow-[0_10px_0_#231815,0_20px_40px_rgba(0,0,0,0.45)] transition-all"
+      >
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b-[3px] border-[#231815]/15">
+          <div>
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#fee2e2] border-2 border-[#231815] text-[#991b1b] font-extrabold text-xs uppercase mb-1.5">
+              <span>🚨 Тревога в отсеке</span>
+              <span id="crisis-code-badge">КРИЗИС 4А</span>
+            </div>
+            <h2 id="crisis-title" class="text-xl sm:text-2xl font-extrabold text-[#231815]">
+              «Солнечные панели занесло песком перед бурей»
+            </h2>
+            <p id="crisis-subtitle" class="text-sm sm:text-base font-semibold text-[#57534e] mt-0.5">
+              Песчаная буря накрывает базу! Выбери план действий для экипажа в шлюзе:
+            </p>
+          </div>
+          <div class="shrink-0 flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-[#fef3c7] border-2 border-[#231815] text-xs sm:text-sm font-extrabold text-[#92400e]">
+            <span>🚪 Отвечает за: ⚡ Энергию и 🛡️ Щит</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mt-5">
+
+          <div
+            onclick="openTutorialForOption(1)"
+            class="group cursor-pointer flex flex-col justify-between rounded-2xl bg-gradient-to-b from-[#fffbeb] to-[#fef3c7] border-[3px] border-[#231815] p-5 shadow-[0_6px_0_#231815] hover:-translate-y-1 hover:shadow-[0_9px_0_#231815] active:translate-y-0.5 transition-all"
+          >
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-3">
+                <span class="px-3 py-1 rounded-lg bg-[#d97706] text-white font-extrabold text-xs uppercase border-2 border-[#231815]">
+                  Вариант 1
+                </span>
+                <span id="opt1-minigame-tag" class="px-2.5 py-1 rounded-lg bg-white border-2 border-[#231815] font-extrabold text-xs text-[#b45309]">
+                  🧹 Игра №7: Очистка панелей (10с)
+                </span>
+              </div>
+              <h3 id="opt1-title" class="text-base sm:text-lg font-extrabold text-[#231815] leading-snug">
+                Выйти в скафандрах и очистить панели под ветром
+              </h3>
+            </div>
+
+            <div class="mt-5 pt-3 border-t-2 border-[#231815]/15">
+              <div class="text-xs font-bold uppercase text-[#475569] mb-1.5">Цена и Награда (при победе):</div>
+              <div id="opt1-rewards" class="flex flex-wrap items-center gap-2">
+
+              </div>
+              <button class="mt-4 w-full py-2.5 rounded-xl bg-[#fbbf24] group-hover:bg-[#f59e0b] text-[#231815] font-extrabold text-sm border-2 border-[#231815] shadow-[0_3px_0_#231815] transition">
+                Выбрать Вариант 1 →
+              </button>
+            </div>
+          </div>
+
+          <div
+            onclick="openTutorialForOption(2)"
+            class="group cursor-pointer flex flex-col justify-between rounded-2xl bg-gradient-to-b from-[#eff6ff] to-[#dbeafe] border-[3px] border-[#231815] p-5 shadow-[0_6px_0_#231815] hover:-translate-y-1 hover:shadow-[0_9px_0_#231815] active:translate-y-0.5 transition-all"
+          >
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-3">
+                <span class="px-3 py-1 rounded-lg bg-[#2563eb] text-white font-extrabold text-xs uppercase border-2 border-[#231815]">
+                  Вариант 2
+                </span>
+                <span id="opt2-minigame-tag" class="px-2.5 py-1 rounded-lg bg-white border-2 border-[#231815] font-extrabold text-xs text-[#1d4ed8]">
+                  🧱 Игра №8: Залатай обшивку (10с)
+                </span>
+              </div>
+              <h3 id="opt2-title" class="text-base sm:text-lg font-extrabold text-[#231815] leading-snug">
+                Свернуть панели и укрепить стены мешками с реголитом
+              </h3>
+            </div>
+
+            <div class="mt-5 pt-3 border-t-2 border-[#231815]/15">
+              <div class="text-xs font-bold uppercase text-[#475569] mb-1.5">Цена и Награда (при победе):</div>
+              <div id="opt2-rewards" class="flex flex-wrap items-center gap-2">
+
+              </div>
+              <button class="mt-4 w-full py-2.5 rounded-xl bg-[#60a5fa] group-hover:bg-[#3b82f6] text-[#231815] font-extrabold text-sm border-2 border-[#231815] shadow-[0_3px_0_#231815] transition">
+                Выбрать Вариант 2 →
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        id="airlock-tutorial-modal"
+        class="hidden pointer-events-auto w-full max-w-lg bg-[#fffdf9] border-[4px] border-[#231815] rounded-3xl p-6 shadow-[0_10px_0_#231815,0_20px_50px_rgba(0,0,0,0.5)] text-center"
+      >
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#fef9c3] border-2 border-[#231815] text-xs font-extrabold text-[#854d0e] uppercase mb-2">
+          <span>🎮 Инструкция</span>
+          <span>• 10 секунд</span>
+        </div>
+        <h3 id="tut-title" class="text-xl sm:text-2xl font-extrabold text-[#231815]">
+          Мини-игра №7: «Очистка панелей»
+        </h3>
+        <p id="tut-desc" class="text-sm font-semibold text-[#57534e] mt-1">
+          Быстро води мышкой или пальцем (как щёткой) по солнечной батарее и сотри оранжевый песок!
+        </p>
+
+        <div class="relative w-full h-44 my-4 rounded-2xl bg-[#0f172a] border-[3px] border-[#231815] overflow-hidden flex items-center justify-center">
+
+          <div id="tut-gif-game7" class="relative w-full h-full flex flex-col items-center justify-center p-3">
+            <div class="absolute top-2 left-3 right-3 flex items-center justify-between text-xs font-extrabold text-white bg-black/50 px-3 py-1 rounded-lg z-10">
+              <span>Води мышкой 🧹 по панели!</span>
+              <span class="text-[#fde047]">Очисти до 90%!</span>
+            </div>
+            <div class="relative w-60 h-24 mt-4 rounded-xl bg-[#1d4ed8] border-[3px] border-[#231815] overflow-hidden shadow-inner">
+
+              <div class="w-full h-full grid grid-cols-4 grid-rows-2 opacity-60">
+                <div class="border border-sky-300"></div><div class="border border-sky-300"></div><div class="border border-sky-300"></div><div class="border border-sky-300"></div>
+                <div class="border border-sky-300"></div><div class="border border-sky-300"></div><div class="border border-sky-300"></div><div class="border border-sky-300"></div>
+              </div>
+
+              <div class="gif-sand-overlay absolute inset-0 bg-[#d97706] flex items-center justify-center text-xs font-black text-[#231815]">
+                ОРАНЖЕВЫЙ ПЕСОК
+              </div>
+
+              <div class="gif-brush-icon absolute top-0 left-0 text-3xl pointer-events-none">🧹</div>
+            </div>
+          </div>
+
+          <div id="tut-gif-game8" class="hidden relative w-full h-full flex items-center justify-center">
+            <div class="absolute top-2 left-3 right-3 flex items-center justify-between text-xs font-extrabold text-white bg-black/50 px-3 py-1 rounded-lg z-10">
+              <span>Перетащи 4 плиты 🧱 на трещины!</span>
+              <span class="text-[#4ade80]">Укрепи стену!</span>
+            </div>
+            <div class="flex items-center gap-12 mt-5">
+
+              <div class="px-3 py-2 rounded-xl bg-[#d97706] border-2 border-[#231815] font-extrabold text-xs text-white shadow">
+                🧱 ПЛИТА
+              </div>
+
+              <div class="gif-crack-target w-24 h-20 rounded-2xl border-[3px] border-dashed flex flex-col items-center justify-center p-2">
+                <span class="text-2xl">⚡</span>
+                <span class="text-[10px] font-black text-[#231815]">ТРЕЩИНА</span>
+              </div>
+            </div>
+            <div class="gif-plate-anim absolute flex items-center gap-1 pointer-events-none">
+              <span class="px-3 py-1.5 rounded-xl bg-[#f59e0b] border-2 border-[#231815] font-extrabold text-xs text-[#231815] shadow-lg">🧱 Реголит</span>
+              <span class="text-2xl">👆</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3 mt-4">
+          <button
+            onclick="resetToCrisisDilemma()"
+            class="w-1/3 py-3 rounded-2xl bg-[#e2e8f0] hover:bg-[#cbd5e1] text-[#231815] font-extrabold text-sm border-[3px] border-[#231815] shadow-[0_4px_0_#231815] transition cursor-pointer"
+          >
+            ← Назад
+          </button>
+          <button
+            onclick="startSelectedMiniGame()"
+            class="w-2/3 py-3 rounded-2xl bg-[#4ade80] hover:bg-[#22c55e] active:translate-y-0.5 text-[#231815] font-extrabold text-base sm:text-lg border-[3px] border-[#231815] shadow-[0_5px_0_#231815] transition cursor-pointer"
+          >
+            🚀 СТАРТ! (10 СЕК)
+          </button>
+        </div>
+      </div>
+
+      <div
+        id="airlock-active-game-box"
+        class="hidden pointer-events-auto relative w-full max-w-4xl h-[75vh] max-h-[590px] bg-[#0f172a]/75 backdrop-blur-[2px] border-[4px] border-[#231815] rounded-3xl shadow-[0_10px_0_#231815] overflow-hidden flex flex-col justify-between"
+      >
+
+        <div class="relative z-20 flex items-center justify-between gap-4 bg-[#fffdf9] px-5 py-3 border-b-[3px] border-[#231815]">
+          <div class="flex items-center gap-3">
+            <span id="active-game-badge" class="px-3 py-1 rounded-xl bg-[#f59e0b] border-2 border-[#231815] font-extrabold text-xs sm:text-sm text-[#231815]">
+              🧹 Очистка панелей
+            </span>
+            <div class="text-sm sm:text-base font-extrabold text-[#231815]">
+              Прогресс: <span id="game-score-current" class="text-[#16a34a] text-lg">0%</span> / <span id="game-score-target">100%</span>
+            </div>
+          </div>
+
+          <div class="hidden sm:flex items-center gap-2 flex-1 max-w-xs">
+            <div class="w-full h-4 rounded-full bg-[#e2e8f0] border-2 border-[#231815] overflow-hidden">
+              <div id="game-goal-bar" class="h-full bg-[#4ade80] transition-all duration-100" style="width: 0%;"></div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2 px-3.5 py-1 rounded-xl bg-[#fee2e2] border-2 border-[#231815] font-extrabold text-base sm:text-lg text-[#b91c1c]">
+            <span>⏱️</span>
+            <span id="game-timer-display">10.0с</span>
+          </div>
+        </div>
+
+        <div class="w-full h-2 bg-[#1e293b]">
+          <div id="game-time-bar" class="h-full bg-[#f59e0b] transition-all duration-75" style="width: 100%;"></div>
+        </div>
+
+        <div id="arena-game-7" class="relative flex-1 w-full h-full p-3 sm:p-5 flex flex-col justify-between items-center">
+          <div class="w-full max-w-2xl bg-[#fffdf9] border-[3px] border-[#231815] rounded-2xl px-4 py-2 shadow-[0_4px_0_#231815] flex flex-wrap items-center justify-between gap-2">
+            <span id="panel-game-hint" class="text-xs sm:text-sm font-extrabold text-[#231815]">
+              🧹 Быстро води мышкой (или пальцем) по солнечной батарее, чтобы стереть слой оранжевого песка!
+            </span>
+            <span class="px-2.5 py-0.5 rounded-lg bg-[#fef08a] border-2 border-[#231815] font-extrabold text-xs text-[#854d0e]">
+              Буря подсыпает песок!
+            </span>
+          </div>
+
+          <div class="relative w-full max-w-2xl flex-1 my-2 rounded-3xl bg-[#1e3a8a] border-[4px] border-[#231815] shadow-[0_6px_0_#231815] overflow-hidden">
+
+            <div class="absolute inset-0 p-4 flex flex-col justify-between pointer-events-none">
+              <div class="w-full h-full grid grid-cols-6 grid-rows-3 gap-1.5">
+                <div class="rounded bg-gradient-to-br from-[#2563eb] to-[#1d4ed8] border border-sky-300/60"></div>
+                <div class="rounded bg-gradient-to-br from-[#2563eb] to-[#1d4ed8] border border-sky-300/60"></div>
+                <div class="rounded bg-gradient-to-br from-[#2563eb] to-[#1d4ed8] border border-sky-300/60"></div>
+                <div class="rounded bg-gradient-to-br from-[#2563eb] to-[#1d4ed8] border border-sky-300/60"></div>
+                <div class="rounded bg-gradient-to-br from-[#2563eb] to-[#1d4ed8] border border-sky-300/60"></div>
+                <div class="rounded bg-gradient-to-br from-[#2563eb] to-[#1d4ed8] border border-sky-300/60"></div>
+
+                <div class="rounded bg-gradient-to-br from-[#2563eb] to-[#1d4ed8] border border-sky-300/60"></div>
+                <div class="rounded bg-gradient-to-br from-[#2563eb] to-[#1d4ed8] border border-sky-300/60"></div>
+                <div class="rounded bg-gradient-to-br from-[#2563eb] to-[#1d4ed8] border border-sky-300/60"></div>
+                <div class="rounded bg-gradient-to-br from-[#2563eb] to-[#1d4ed8] border border-sky-300/60"></div>
+                <div class="rounded bg-gradient-to-br from-[#2563eb] to-[#1d4ed8] border border-sky-300/60"></div>
+                <div class="rounded bg-gradient-to-br from-[#2563eb] to-[#1d4ed8] border border-sky-300/60"></div>
+
+                <div class="rounded bg-gradient-to-br from-[#2563eb] to-[#1d4ed8] border border-sky-300/60"></div>
+                <div class="rounded bg-gradient-to-br from-[#2563eb] to-[#1d4ed8] border border-sky-300/60"></div>
+                <div class="rounded bg-gradient-to-br from-[#2563eb] to-[#1d4ed8] border border-sky-300/60"></div>
+                <div class="rounded bg-gradient-to-br from-[#2563eb] to-[#1d4ed8] border border-sky-300/60"></div>
+                <div class="rounded bg-gradient-to-br from-[#2563eb] to-[#1d4ed8] border border-sky-300/60"></div>
+                <div class="rounded bg-gradient-to-br from-[#2563eb] to-[#1d4ed8] border border-sky-300/60"></div>
+              </div>
+            </div>
+
+            <canvas id="sand-wipe-canvas" class="relative z-10 w-full h-full block cursor-grab active:cursor-grabbing touch-none"></canvas>
+          </div>
+
+          <div class="px-4 py-1 rounded-full bg-black/65 text-white text-xs sm:text-sm font-bold">
+            Води курсором из стороны в сторону без остановки — очисти панель!
+          </div>
+        </div>
+
+        <div id="arena-game-8" class="hidden relative flex-1 w-full h-full p-4 sm:p-6 flex flex-col justify-between items-center">
+          <div class="w-full max-w-2xl bg-[#fffdf9] border-[3px] border-[#231815] rounded-2xl px-4 py-2.5 shadow-[0_4px_0_#231815] flex flex-wrap items-center justify-between gap-2">
+            <span class="text-xs sm:text-sm font-extrabold text-[#231815]">
+              🧱 Перетащи защитные плиты из реголита (или кликни по плите и трещине) на все 4 красные трещины!
+            </span>
+            <span id="patch-counter-badge" class="px-3 py-1 rounded-xl bg-[#dbeafe] border-2 border-[#231815] font-extrabold text-xs text-[#1e3a8a]">
+              Залатано: 0 / 4
+            </span>
+          </div>
+
+          <div class="w-full max-w-2xl flex-1 my-2 rounded-3xl bg-gradient-to-b from-[#b8563c] to-[#8f3c26] border-[4px] border-[#231815] shadow-[0_6px_0_#231815] p-4 grid grid-cols-2 gap-4 items-center justify-items-center">
+
+            <div id="hull-cracks-grid" class="col-span-2 w-full h-full grid grid-cols-2 gap-4"></div>
+          </div>
+
+          <div class="w-full max-w-2xl bg-[#1e293b] border-[3px] border-[#231815] rounded-2xl px-4 py-3 shadow-[0_5px_0_#231815] flex items-center justify-around gap-3">
+            <div id="regolith-plates-pool" class="flex flex-wrap items-center justify-center gap-3 w-full">
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        id="airlock-result-modal"
+        class="hidden pointer-events-auto w-full max-w-md bg-[#fffdf9] border-[4px] border-[#231815] rounded-3xl p-6 shadow-[0_10px_0_#231815,0_20px_50px_rgba(0,0,0,0.5)] text-center"
+      >
+        <div id="res-icon" class="text-5xl mb-2">🎉</div>
+        <h3 id="res-title" class="text-2xl font-extrabold text-[#231815]">
+          Кризис устранён!
+        </h3>
+        <p id="res-desc" class="text-sm font-bold text-[#57534e] mt-1">
+          Шлюз и внешние системы базы успешно защищены!
+        </p>
+
+        <div id="res-badges" class="flex flex-wrap items-center justify-center gap-2 my-4">
+
+        </div>
+
+        <div class="flex items-center justify-center gap-3 mt-4">
+          <button
+            onclick="afterResult()"
+            class="px-5 py-3 rounded-2xl bg-[#fde047] hover:bg-[#facc15] text-[#231815] font-extrabold text-sm border-[3px] border-[#231815] shadow-[0_4px_0_#231815] transition cursor-pointer"
+          >
+            🔄 Дальше
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <script src="dune-dict.js"></script>
+<script src="dune-i18n.js"></script>
+<script src="holo.js"></script>
+<script src="chars-img.js"></script>
+<script src="chars.js"></script>
+<script src="dune-econ.js"></script>
+<script src="dune-bridge.js"></script>
+<script src="dune-crisis.js"></script>
+<script src="mini2.js"></script>
+<script src="airlock.js"></script>
+<script src="dune-day.js"></script>
+</body>
+</html>

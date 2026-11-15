@@ -1,6 +1,3 @@
-/* Polish for the game: procedural sound, haptics, animated numbers and the Martian sky tint.
- * No audio files are needed: every sound is synthesised with the Web Audio API.
- * All of it respects prefers-reduced-motion and can be muted (the choice is remembered). */
 (function(){
 "use strict";
 const reduce=matchMedia("(prefers-reduced-motion:reduce)").matches;
@@ -17,7 +14,7 @@ function audio(){
   if(ctx.state==="suspended")ctx.resume().catch(()=>{});
   return ctx;
 }
-/* one synthesised note: frequency slide, type, attack/decay */
+
 function tone(f0,f1,dur,type,gain,delay){
   const c=audio();if(!c)return;
   const t0=c.currentTime+(delay||0),o=c.createOscillator(),g=c.createGain();
@@ -56,10 +53,6 @@ function play(name){
 }
 function setOn(v){on=!!v;try{localStorage.setItem(KEY,on?"1":"0")}catch(_){}if(on)play("click")}
 
-/* ---- animated numbers and bars ----
- * Elements carry data-tk (a key), data-tv (the number) and optional data-tb (bar value, 0-100).
- * When the screen is repainted we compare with the previous numbers: the number counts up/down, the bar slides, and the
- * element flashes green or red for a moment so the player sees WHAT changed. */
 const prev={};
 function animate(container,scope){
   const store=prev[scope]||(prev[scope]={});
@@ -76,10 +69,9 @@ function animate(container,scope){
 }
 function resetAnimation(scope){delete prev[scope]}
 
-/* ---- Martian sky: dawn at the start of the mission, midday orange, dusk near the end, brown in a dust storm ---- */
 function sky(progress,storm){
   const p=Math.max(0,Math.min(1,progress));
-  /* hue of the horizon glow: rose (dawn) -> amber (day) -> violet (dusk) */
+
   const stops=[[0,[255,142,120]],[.25,[255,176,110]],[.6,[232,150,96]],[.85,[176,96,120]],[1,[96,70,140]]];
   let a=stops[0],b=stops[stops.length-1];
   for(let i=1;i<stops.length;i++)if(p<=stops[i][0]){a=stops[i-1];b=stops[i];break}
@@ -92,7 +84,6 @@ function applySky(el,progress,storm){
   el.style.setProperty("--sky-rgb",s.rgb);el.style.setProperty("--sky-dust",s.dust);el.style.setProperty("--sky-night",s.night.toFixed(2));
 }
 
-/* ---- labels that depend on the language: skip link, sound button ---- */
 function labels(){
   const l=(typeof lang!=="undefined"&&lang)||"en",pack=(typeof GT!=="undefined"&&(GT[l]||GT.en))||null,t=pack&&pack.x;
   const sk=document.getElementById("skip-link"),sb=document.getElementById("snd");

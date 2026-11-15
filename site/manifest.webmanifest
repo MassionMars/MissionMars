@@ -1,6 +1,6 @@
 {
-  "name": "MISSION: MARS",
-  "short_name": "MISSION: MARS",
+  "name": "MISSION MARS",
+  "short_name": "MISSION MARS",
   "description": "Mars base trainer: balance power, life support, radiation shielding and food.",
   "start_url": "./",
   "scope": "./",

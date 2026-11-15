@@ -1,21 +1,17 @@
-    // =====================================================================
-    // 1. СОСТОЯНИЕ РЕСУРСОВ БАЗЫ И ЗВУКОВОЙ СИНТЕЗАТОР (WEB AUDIO API)
-    // =====================================================================
-    const gameState = {
-      life: 70,     // ❤️ Жизнь
-      energy: 80,   // ⚡ Энергия
-      shield: 75,   // 🛡️ Щит
-      science: 10,  // 🧬 Наука
-      hearts: 3,    // ❤️ Попытки
+const gameState = {
+      life: 70,
+      energy: 80,
+      shield: 75,
+      science: 10,
+      hearts: 3,
       activeDept: 'greenhouse',
       currentCrisis: '1A',
       selectedOption: 1
     };
     Object.assign(gameState, DuneBridge.load());
 
-    // Конфигурация кризисов Комнаты 1 (🌱 ТЕПЛИЦА) и Комнаты 2 (🏥 МЕДПУНКТ)
     const ROOM_CRISES = {
-      // ---------------- КОМНАТА 1: 🌱 ТЕПЛИЦА ----------------
+
       '1A': {
         dept: 'greenhouse',
         code: 'КРИЗИС 1А',
@@ -59,7 +55,7 @@
             shieldReward: 0,
             scienceReward: 0,
             minigameId: 9,
-            minigameTag: '🚰 Полив по трубам (10с)',
+            minigameTag: '🚰 Полив по клапанам (10с)',
             targetScore: 1
           },
           2: {
@@ -75,7 +71,6 @@
         }
       },
 
-      // ---------------- КОМНАТА 2: 🏥 МЕДПУНКТ ----------------
       '2A': {
         dept: 'medbay',
         code: 'КРИЗИС 2А',
@@ -136,7 +131,6 @@
       }
     };
 
-    // Web Audio API — синтезатор звуков без внешних файлов
     let audioCtx = null;
     function ensureAudio() {
       if (!audioCtx) {
@@ -210,7 +204,7 @@
           });
         }
       } catch (e) {
-        // Игнорируем ошибки автовоспроизведения браузера
+
       }
     }
 
@@ -239,7 +233,6 @@
       document.getElementById('hud-hearts').innerHTML = heartsStr;
       document.getElementById('modal-hearts').innerHTML = heartsStr;
 
-      // Всплывающие индикаторы (+20 ❤️, +15 🛡️, -15 ⚡ и т.д.)
       ['life', 'energy', 'shield', 'science'].forEach((key) => {
         if (deltas[key]) {
           const el = document.getElementById(`float-${key}`);
@@ -253,9 +246,6 @@
       });
     }
 
-    // =====================================================================
-    // 2. НАВИГАЦИЯ ПО ОТСЕКАМ БАЗЫ И ПЕРЕКЛЮЧЕНИЕ КРИЗИСОВ (ТЕПЛИЦА И МЕДПУНКТ)
-    // =====================================================================
     const DEPARTMENTS = {
       greenhouse: {
         title: 'ТЕПЛИЦА',
@@ -363,7 +353,6 @@
       }, 260);
     }
 
-    // Переключение между Кризисом А и Кризисом Б внутри текущей открытой комнаты
     function selectRoomCrisis(variantLetter) {
       stopAnyRunningMiniGame();
       const prefix = gameState.activeDept === 'medbay' ? '2' : '1';
@@ -392,7 +381,6 @@
         tabA.className = 'px-4 sm:px-5 py-2 sm:py-2.5 rounded-2xl font-extrabold text-sm sm:text-lg border-[3px] border-transparent hover:border-[#231815] bg-[#f1f5f9] text-[#475569] transition cursor-pointer';
       }
 
-      // Заполнение карточек вариантов
       document.getElementById('crisis-code-badge').textContent = data.code;
       document.getElementById('crisis-title').textContent = data.title;
       document.getElementById('crisis-subtitle').textContent = data.subtitle;
@@ -412,13 +400,11 @@
         return html;
       }
 
-      // Вариант 1
       const o1 = data.options[1];
       document.getElementById('opt1-title').textContent = o1.title;
       document.getElementById('opt1-minigame-tag').textContent = o1.minigameTag;
       document.getElementById('opt1-rewards').innerHTML = buildRewardBadges(o1);
 
-      // Вариант 2
       const o2 = data.options[2];
       document.getElementById('opt2-title').textContent = o2.title;
       document.getElementById('opt2-minigame-tag').textContent = o2.minigameTag;
@@ -436,7 +422,6 @@
       document.getElementById('gh-result-modal').classList.add('hidden');
     }
 
-    // a won crisis leads to a new random one; after a loss the same crisis is offered again
     function nextCrisis() {
       const pre = gameState.activeDept === 'medbay' ? '2' : '1';
       selectRoomCrisis(MMCrisis.pick([pre + 'A', pre + 'B'], gameState.currentCrisis).slice(-1));
@@ -449,7 +434,6 @@
       resetToCrisisDilemma();
     }
 
-    // Открытие GIF-инструкции перед началом мини-игры (№1, №2, №3 или №4)
     function openTutorialForOption(optionNum) {
       ensureAudio();
       playSound('tick');
@@ -499,9 +483,6 @@
       }
     }
 
-    // =====================================================================
-    // 3. ДВИЖОК МИНИ-ИГР №1, №2, №3 И №4 — 10 СЕКУНД
-    // =====================================================================
     let activeGameTimer = null;
     let activeAnimationFrame = null;
     let activeSpawnInterval = null;
@@ -572,7 +553,6 @@
         initPulseNormalGame();
       }
 
-      // Обратный отсчёт 10 секунд с тиканьем на последних 3 секундах
       let lastWholeSecond = 10;
       activeGameTimer = setInterval(() => {
         if (!miniGameRunning) return;
@@ -604,7 +584,6 @@
       }
     }
 
-    // ---------------- МИНИ-ИГРА №1: «ПОЙМАЙ КАПЛИ» (CANVAS) ----------------
     const keysDown = { left: false, right: false };
     window.addEventListener('keydown', (e) => {
       if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A' || e.key === 'ф') keysDown.left = true;
@@ -636,7 +615,6 @@
       const drops = [];
       const popups = [];
 
-      // Управление мышью и тачем
       const moveHandler = (clientX) => {
         const rect = canvas.getBoundingClientRect();
         const relX = clientX - rect.left;
@@ -648,7 +626,6 @@
         if (e.touches[0]) moveHandler(e.touches[0].clientX);
       };
 
-      // Генерация падающих капель (чистые голубые и солёные жёлто-коричневые)
       activeSpawnInterval = setInterval(() => {
         if (!miniGameRunning) return;
         const isSalty = Math.random() < 0.32;
@@ -665,18 +642,15 @@
         if (!miniGameRunning) return;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Движение с клавиатуры
         if (keysDown.left) funnel.x = Math.max(funnel.w / 2 + 10, funnel.x - 8);
         if (keysDown.right) funnel.x = Math.min(canvas.width - funnel.w / 2 - 10, funnel.x + 8);
 
         const funnelY = canvas.height - 68;
 
-        // Обновление и отрисовка капель
         for (let i = drops.length - 1; i >= 0; i--) {
           const d = drops[i];
           d.y += d.vy;
 
-          // Отрисовка капли в контурном комикс-стиле
           ctx.save();
           ctx.beginPath();
           ctx.moveTo(d.x, d.y - d.r * 1.3);
@@ -690,14 +664,12 @@
           ctx.strokeStyle = '#231815';
           ctx.stroke();
 
-          // Блик на капле
           ctx.beginPath();
           ctx.arc(d.x - 4, d.y - 2, 3.5, 0, Math.PI * 2);
           ctx.fillStyle = '#ffffff';
           ctx.fill();
           ctx.restore();
 
-          // Проверка попадания в лейку/воронку
           if (
             d.y + d.r >= funnelY &&
             d.y - d.r <= funnelY + funnel.h &&
@@ -722,7 +694,6 @@
           }
         }
 
-        // Отрисовка воронки/лейки NASA
         ctx.save();
         const fx = funnel.x - funnel.w / 2;
         ctx.beginPath();
@@ -739,18 +710,15 @@
         ctx.strokeStyle = '#231815';
         ctx.stroke();
 
-        // Голубая полоска воды внутри лейки
         ctx.fillStyle = '#0ea5e9';
         ctx.fillRect(fx + 18, funnelY + 8, funnel.w - 36, 10);
 
-        // Подпись на воронке
         ctx.fillStyle = '#231815';
         ctx.font = '800 13px MMSans, sans-serif';
         ctx.textAlign = 'center';
         ctx.fillText('ВОРОНКА H₂O', funnel.x, funnelY + 33);
         ctx.restore();
 
-        // Всплывающие тексты (+1 / -1)
         for (let i = popups.length - 1; i >= 0; i--) {
           const p = popups[i];
           p.y -= 1.5;
@@ -772,7 +740,6 @@
       activeAnimationFrame = requestAnimationFrame(renderDropsLoop);
     }
 
-    // ---------------- МИНИ-ИГРА №2: «СОБЕРИ УРОЖАЙ» (12 ГРЯДОК) ----------------
     const VEG_CAB = '<svg viewBox="0 0 64 64" class="veg" aria-hidden="true"><ellipse cx="32" cy="57" rx="19" ry="4.5" fill="rgba(0,0,0,.28)"/><path d="M8 36c-2-12 7-24 24-24s26 12 24 24c-1 12-12 21-24 21S9 48 8 36z" fill="#3f9b4a" stroke="#1d3d22" stroke-width="2.4"/><path d="M14 38c-2-9 5-18 18-18s20 9 18 18c-1 9-8 15-18 15s-17-6-18-15z" fill="#79c85a" stroke="#256a2e" stroke-width="2"/><path d="M22 40c-1-6 3-12 10-12s11 6 10 12c-1 6-5 9-10 9s-9-3-10-9z" fill="#b9e58a" stroke="#3b8a3a" stroke-width="1.8"/><path d="M32 49V30M32 40l-8-8M32 40l8-8M32 34l-5-5M32 34l5-5" fill="none" stroke="#e8f8c8" stroke-width="1.6" stroke-linecap="round"/><path d="M12 30c4-8 10-12 17-12" fill="none" stroke="#cfeea2" stroke-width="2" stroke-linecap="round" opacity=".7"/></svg>';
     const VEG_RAD = '<svg viewBox="0 0 64 64" class="veg" aria-hidden="true"><ellipse cx="32" cy="58" rx="16" ry="4" fill="rgba(0,0,0,.28)"/><path d="M32 22c-4-12-14-14-20-12 4 2 10 6 12 14zM32 22c1-12 8-17 15-17-3 4-5 9-6 17zM32 22c0-10 0-15-1-19 4 4 5 11 5 19z" fill="#4fae4c" stroke="#1d3d22" stroke-width="2" stroke-linejoin="round"/><path d="M32 20c-12 0-21 9-21 20 0 9 7 14 14 16 4 1 4 1 7 5 3-4 3-4 7-5 7-2 14-7 14-16 0-11-9-20-21-20z" fill="url(#rg)" stroke="#6b0f2e" stroke-width="2.4"/><defs><radialGradient id="rg" cx=".35" cy=".3" r=".9"><stop offset="0" stop-color="#ff8aa5"/><stop offset=".55" stop-color="#e5214f"/><stop offset="1" stop-color="#a50f35"/></radialGradient></defs><path d="M18 33c2-5 6-8 11-9" fill="none" stroke="#ffd0da" stroke-width="2.4" stroke-linecap="round" opacity=".8"/><path d="M25 52c3-3 4-3 7-3s4 0 7 3" fill="none" stroke="#fff4f6" stroke-width="2" opacity=".55"/></svg>';
     const VEG_BAD = '<svg viewBox="0 0 64 64" class="veg" aria-hidden="true"><ellipse cx="32" cy="57" rx="19" ry="4.5" fill="rgba(0,0,0,.28)"/><path d="M8 38c-2-12 7-24 24-24s26 12 24 24c-1 12-12 19-24 19S9 50 8 38z" fill="#9a8a35" stroke="#463c10" stroke-width="2.4"/><path d="M14 40c-2-9 5-17 18-17s20 8 18 17c-1 9-8 14-18 14s-17-5-18-14z" fill="#c4b247" stroke="#6b5a14" stroke-width="2"/><circle cx="24" cy="38" r="4" fill="#5a3a12"/><circle cx="38" cy="33" r="3" fill="#5a3a12"/><circle cx="35" cy="45" r="3.4" fill="#6c4a18"/><circle cx="23" cy="47" r="2" fill="#7b2e1a"/><path d="M26 18c2-3 4-4 6-5M44 22c2-2 3-2 5-3" stroke="#6b5a14" stroke-width="2" fill="none" stroke-linecap="round"/></svg>';
@@ -839,12 +806,10 @@
         }, 1250);
       }
 
-      // Сразу спавним 4 листа и затем каждые 330 мс
       for (let k = 0; k < 4; k++) spawnLeafInRandomSlot();
       activeSpawnInterval = setInterval(spawnLeafInRandomSlot, 330);
     }
 
-    // ---------------- МИНИ-ИГРА №3: «ВИТАМИННЫЙ МИКС» (ПЕРЕТАСКИВАНИЕ 3 КАПСУЛ В КОЛБУ) ----------------
     const CAPSULE_TYPES = [
       { id: 'red', name: 'Витамин C', emoji: '🍓', bg: '#ef4444' },
       { id: 'blue', name: 'Аква-Гель', emoji: '💧', bg: '#38bdf8' },
@@ -862,7 +827,6 @@
       document.getElementById('mix-flask-label').textContent = isFilterMode ? '🛡️ БЛОК ФИЛЬТРА' : '🧪 МЕД-КОЛБА';
       document.getElementById('mix-flask-icon').textContent = isFilterMode ? '🌀' : '⚗️';
 
-      // Выбираем 3 случайные целевые капсулы для рецепта
       const shuffled = [...CAPSULE_TYPES].sort(() => Math.random() - 0.5);
       const recipe = shuffled.slice(0, 3);
       const matchedIds = [];
@@ -901,7 +865,6 @@
 
       renderRecipeAndSlots();
 
-      // Перемешиваем все 6 капсул для игрового поля
       const poolItems = [...CAPSULE_TYPES].sort(() => Math.random() - 0.5);
       poolEl.innerHTML = '';
 
@@ -941,7 +904,6 @@
           <span class="text-[11px] font-extrabold text-[#231815] mt-1">${cap.name}</span>
         `;
 
-        // Поддержка и перетаскивания (Drag & Drop), и быстрого клика/тапа для детей
         btn.addEventListener('dragstart', (e) => {
           e.dataTransfer.setData('text/plain', cap.id);
         });
@@ -967,8 +929,7 @@
       };
     }
 
-    // ---------------- МИНИ-ИГРА №4: «ПУЛЬС В НОРМЕ» (КАРДИОГРАММА С БЕГУНКОМ) ----------------
-    let pulseRunnerPos = 50; // 0..100%
+    let pulseRunnerPos = 50;
     let pulseRunnerDir = 1;
     let pulseRunnerSpeed = 1.35;
 
@@ -1012,7 +973,6 @@
       const bpmEl = document.getElementById('pulse-bpm-readout');
       const avatarEl = document.getElementById('pulse-heart-avatar');
 
-      // Зелёная зона находится в диапазоне 32% .. 68%
       if (pulseRunnerPos >= 32 && pulseRunnerPos <= 68) {
         playSound('good');
         pulseRunnerSpeed = Math.min(2.15, pulseRunnerSpeed + 0.12);
@@ -1036,7 +996,6 @@
       }
     }
 
-    // Позволяем нажимать Пробел в Мини-игре №4 «Пульс в норме»
     window.addEventListener('keydown', (e) => {
       if (e.code === 'Space' && miniGameRunning) {
         const crisisObj = ROOM_CRISES[gameState.currentCrisis];
@@ -1048,7 +1007,6 @@
       }
     });
 
-    // ---------------- ЗАВЕРШЕНИЕ МИНИ-ИГРЫ И НАЧИСЛЕНИЕ РЕСУРСОВ ----------------
     function finishMiniGame(isWin) {
       stopAnyRunningMiniGame();
 
@@ -1083,7 +1041,7 @@
         const roomName = gameState.activeDept === 'medbay' ? 'Медпункт' : 'Теплица';
         iconEl.textContent = '🎉';
         titleEl.textContent = 'Победа! Кризис преодолён!';
-        descEl.textContent = `Ты отлично справился за 10 секунд! ${roomName} Mars Dune Alpha работает стабильно.`;
+        descEl.textContent = `Ты отлично справился за 10 секунд! ${roomName} MISSION MARS работает стабильно.`;
 
         let badgesHTML = `
           <span class="px-3.5 py-1.5 rounded-xl bg-[#fef08a] border-2 border-[#231815] font-extrabold text-sm text-[#854d0e]">
@@ -1117,7 +1075,7 @@
         DuneBridge.mini(gameState.currentCrisis, optObj.minigameId, false, (typeof currentScore!=='undefined'?currentScore:0), 0);
         gameState.hearts = Math.max(0, gameState.hearts - 1);
         if (gameState.hearts === 0) {
-          // Авто-восстановление сердечек для детской игры
+
           setTimeout(() => {
             gameState.hearts = 3;
             updateResourceHUD();
@@ -1136,31 +1094,25 @@
       }
     }
 
-    // Закрытие по клавише Escape
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') closeDepartment();
     });
 
-    // =====================================================================
-    // 4. ДИНАМИЧЕСКИЙ ЦИКЛ СОЛА И ОСЕДАНИЕ МАРСИАНСКОЙ ПЫЛИ НА ПАНЕЛЯХ
-    // =====================================================================
     const dustLayers = document.querySelectorAll('.solar-dust-layer');
     const mainSunGroup = document.getElementById('main-sun-group');
     const skyDuskOverlay = document.getElementById('sky-dusk-overlay');
     const sceneEveningTint = document.getElementById('scene-evening-tint');
 
-    let solProgress = 12; // 0..100 (процент завершения дня Сола)
+    let solProgress = 12;
 
     function updateSolEnvironment(value) {
       solProgress = Number(value);
 
-      // 1. Накопление пыли на всех 8 солнечных панелях к концу дня (от 0.05 утром до 0.92 вечером)
       const dustOpacity = '0.06';
       dustLayers.forEach((layer) => {
         layer.setAttribute('opacity', dustOpacity);
       });
 
-      // 2. Плавное движение Солнца по небу и вечерний оттенок
       const sunX = 1280 - (solProgress / 100) * 190;
       const sunY = 78 + Math.sin((solProgress / 100) * Math.PI) * 35;
       mainSunGroup.setAttribute('transform', `translate(${sunX.toFixed(1)}, ${sunY.toFixed(1)})`);
@@ -1170,9 +1122,6 @@
       sceneEveningTint.setAttribute('opacity', '0');
     }
 
-    // The base no longer darkens: the sky and the ground keep their daytime colours.
-
-    // Инициализация при загрузке
     window.onload = () => {
       updateSolEnvironment(12);
       updateResourceHUD();
@@ -1180,10 +1129,7 @@
       MMCrisis.hideTabs();
       DuneBridge.decorateHub();
     };
-  
 
-
-    // ===== MM2 wiring: second-crisis mini-games (ids 9-16) =====
     (function () {
       const _open = openTutorialForOption, _stop = stopAnyRunningMiniGame, _finish = finishMiniGame;
       const opt = () => ROOM_CRISES[gameState.currentCrisis].options[gameState.selectedOption];
@@ -1203,10 +1149,10 @@
         if (!isNew()) { if (window.MM2) MM2.reset(); return _start(); }
         stopAnyRunningMiniGame(); ensureAudio();
         const id = opt().minigameId, T = MM2.meta[id].target;
-        currentScore = 0; targetScore_set(T); timeRemaining = 10.0; miniGameRunning = true;
+        currentScore = 0; targetScore_set(T); const TT = MM2.meta[id].time || 10; timeRemaining = TT; miniGameRunning = true;
         document.getElementById('gh-tutorial-modal').classList.add('hidden');
         const box = document.getElementById('gh-active-game-box'); box.classList.remove('hidden');
-        document.getElementById('game-timer-display').textContent = '10.0с';
+        document.getElementById('game-timer-display').textContent = TT.toFixed(1) + 'с';
         document.getElementById('game-time-bar').style.width = '100%';
         box.querySelectorAll('[id^="arena-game-"]').forEach((a) => a.classList.add('hidden'));
         window.MM2_HOOKS = {
@@ -1216,12 +1162,12 @@
           sfx: (k) => { try { playSound(k); } catch (e) {} }
         };
         MM2.run(id, box);
-        let lastWhole = 10;
+        let lastWhole = Math.ceil(TT);
         activeGameTimer = setInterval(() => {
           if (!miniGameRunning) return;
           timeRemaining = Math.max(0, timeRemaining - 0.1);
           document.getElementById('game-timer-display').textContent = timeRemaining.toFixed(1) + 'с';
-          document.getElementById('game-time-bar').style.width = (timeRemaining / 10) * 100 + '%';
+          document.getElementById('game-time-bar').style.width = (timeRemaining / TT) * 100 + '%';
           const c = Math.ceil(timeRemaining);
           if (c <= 3 && c > 0 && c !== lastWhole) { lastWhole = c; playSound('tick'); }
           if (timeRemaining <= 0) finishMiniGame(currentScore >= MM2.meta[id].target);
@@ -1242,3 +1188,14 @@
         }
       };
     })();
+
+(function () {
+  const M = { 1: ['greenhouse', 'A', 1], 2: ['greenhouse', 'A', 2], 9: ['greenhouse', 'B', 1], 10: ['greenhouse', 'B', 2], 3: ['medbay', 'A', 1], 4: ['medbay', 'A', 2], 11: ['medbay', 'B', 1], 12: ['medbay', 'B', 2] };
+  const o = window.onload;
+  window.onload = function () {
+    if (o) o();
+    const id = DuneBridge.arcade && DuneBridge.arcade(), m = M[id]; if (!m) return;
+    openDepartment(m[0]); selectRoomCrisis(m[1]); openTutorialForOption(m[2]);
+    const t = document.getElementById('room-crisis-tabs'); if (t) t.classList.add('hidden');
+  };
+})();

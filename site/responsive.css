@@ -95,3 +95,7 @@ button,a,.chip,.cc,.res,.dots i,[data-g],[data-go],[data-l]{touch-action:manipul
 .g-rev small{color:var(--mute)}
 
 .g-numn{font-size:11px!important;color:var(--mute);font-style:italic;margin-top:6px!important}
+/* touch targets: enlarge hit area without changing the look */
+.langs button{position:relative}
+.langs button::after{content:"";position:absolute;inset:-6px -3px}
+@media (pointer:coarse){.sty-nav button,.sty-chips button{min-height:40px}}

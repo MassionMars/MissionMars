@@ -5,6 +5,7 @@ async def main():
     async with async_playwright() as p:
         b=await p.chromium.launch(executable_path="/opt/pw-browsers/chromium")
         ctx=await b.new_context(viewport={"width":390,"height":844},device_scale_factor=1,is_mobile=True,has_touch=True)
+        await ctx.add_init_script("try{const o={};for(let i=100;i<=205;i++)o[i]=1;localStorage.setItem('mm-album',JSON.stringify({own:o,km:0}))}catch(e){}")
         page=await ctx.new_page(); errs=[]
         page.on("pageerror",lambda e:errs.append(str(e)))
         await page.route("**/*",lambda r:r.continue_() if "localhost" in r.request.url else r.abort())

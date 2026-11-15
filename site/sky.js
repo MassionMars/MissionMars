@@ -1,6 +1,3 @@
-/* The living Martian sky of the home page: twinkling stars with parallax, shooting stars, big fireball meteors you can
- * catch with a tap, Phobos and Deimos drifting by, a satellite — and the textured Martian ground at the bottom.
- * Everything is drawn here (no images). Tap empty sky: a shooting star flies from your finger. */
 (function(){
 "use strict";
 const cv=document.getElementById("stars");if(!cv)return;
@@ -10,7 +7,6 @@ let W=0,H=0,dpr=1,mx=.5,my=.5,sx=.5,sy=.5,stars=[],shoot=[],met=[],parts=[],next
 const lite=()=>body.classList.contains("lite");
 const TINT=["255,244,226","255,214,170","190,215,255","255,190,170","220,200,255"];
 
-/* ---------- textured Martian ground (static SVG, drawn once) ---------- */
 (function ground(){
   const g=document.getElementById("ground");if(!g)return;
   let rocks="",r=7;const rnd=()=>{r=(r*16807)%2147483647;return r/2147483647};
@@ -40,7 +36,6 @@ const TINT=["255,244,226","255,214,170","190,215,255","255,190,170","220,200,255
    ${rocks}</svg>`;
 })();
 
-/* page themes on the ground: each tab has its own small living scene */
 (function(){const g=document.getElementById("ground");if(!g)return;
   g.insertAdjacentHTML("beforeend",`<svg id="gx" viewBox="0 0 1600 300" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
    <g class="gx gx-about"><g class="gx-rover"><ellipse cx="0" cy="26" rx="44" ry="7" fill="#3a170c" opacity=".35"/><rect x="-34" y="-12" width="68" height="26" rx="8" fill="#f1e8dc" stroke="#2b140d" stroke-width="2.4"/><rect x="-26" y="-6" width="26" height="12" rx="3" fill="#7dc4e8" stroke="#2b140d" stroke-width="1.8"/><rect x="6" y="-8" width="20" height="8" fill="#e0763c" stroke="#2b140d" stroke-width="1.6"/><line x1="22" y1="-12" x2="26" y2="-34" stroke="#2b140d" stroke-width="2.4"/><circle cx="26" cy="-35" r="3.4" fill="#ff5a4a" class="gx-blink"/><g class="gx-wh"><circle cx="-22" cy="16" r="9" fill="#2b2522" stroke="#2b140d" stroke-width="2"/><circle cx="0" cy="16" r="9" fill="#2b2522" stroke="#2b140d" stroke-width="2"/><circle cx="22" cy="16" r="9" fill="#2b2522" stroke="#2b140d" stroke-width="2"/></g></g></g>
@@ -49,7 +44,6 @@ const TINT=["255,244,226","255,214,170","190,215,255","255,190,170","220,200,255
      <g class="gx-pix"><rect x="300" y="210" width="10" height="10" fill="#fff3e0"/><rect x="560" y="230" width="8" height="8" fill="#ffd9a8"/><rect x="900" y="215" width="12" height="12" fill="#fff3e0"/><rect x="1180" y="235" width="9" height="9" fill="#ffd9a8"/><rect x="1420" y="220" width="10" height="10" fill="#fff3e0"/></g></g></svg>`);
 })();
 
-/* ---------- sky ---------- */
 function size(){
   dpr=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;
   cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);cv.style.width=W+"px";cv.style.height=H+"px";cx.setTransform(dpr,0,0,dpr,0,0);
@@ -77,7 +71,7 @@ addEventListener("pointerdown",e=>{
       try{const n=(+localStorage.getItem("mm-meteors")||0)+1;localStorage.setItem("mm-meteors",n)}catch(_){}
       return}
   }
-  if(!e.target.closest("button,a,input,.res,h1")){ /* empty sky: a shooting star flies from the finger */
+  if(!e.target.closest("button,a,input,.res,h1")){
     if(!still&&e.clientY<innerHeight*.7){addShoot(e.clientX,e.clientY,.5+Math.random()*.5,true);spark(e.clientX,e.clientY,6,"255,236,200");if(window.MMX&&MMX.play)MMX.play("tab")}
   }
 },{passive:true});
@@ -95,11 +89,11 @@ function tick(now){
   if(document.hidden||body.classList.contains("intro-on"))return;
   const home=body.dataset.page!=="game";
   const dt=Math.min(50,now-last);last=now;frame++;
-  if(!home)return;                                  /* the game frame has its own sky */
+  if(!home)return;
   sx+=(mx-sx)*.05;sy+=(my-sy)*.05;
   cx.clearRect(0,0,W,H);
   const t=(now-t0)/1000;
-  /* stars */
+
   for(const s of stars){
     const px=s.x+(sx-.5)*s.z*-26,py=s.y+(sy-.5)*s.z*-16;
     let a=.45+.55*Math.sin(t*s.sp+s.p)*.5+.25;
@@ -110,19 +104,16 @@ function tick(now){
       cx.strokeStyle="rgba("+s.c+","+(a*.4).toFixed(2)+")";cx.lineWidth=.7;cx.beginPath();cx.moveTo(px-s.r*3.2,py);cx.lineTo(px+s.r*3.2,py);cx.moveTo(px,py-s.r*3.2);cx.lineTo(px,py+s.r*3.2);cx.stroke()}
   }
   if(still||!home){ if(!home){cx.globalAlpha=1} return }
-  /* moons: Phobos races across, Deimos creeps */
-  const ph=((t*.012)%1.3)-.15,de=((t*.0045+.4)%1.3)-.15;
-  moon(W*(1-ph),H*(.12+.05*Math.sin(ph*3)),7,["200,180,170","90,70,75"]);
-  moon(W*de,H*(.22+.04*Math.sin(de*2.6)),4.5,["210,196,188","100,84,86"]);
-  /* spawn */
+
+
   nextS-=dt;if(nextS<=0){nextS=2200+Math.random()*4200;addShoot(Math.random()*W*.9,Math.random()*H*.4,.35+Math.random()*.5,false)}
   nextM-=dt;if(nextM<=0&&met.length<2){nextM=7000+Math.random()*7000;addMeteor()}
   nextSat-=dt;if(nextSat<=0){nextSat=26000+Math.random()*14000;met.push({sat:true,x:-30,y:H*(.15+Math.random()*.2),vx:.045,vy:.006,r:8,age:0})}
-  /* shooting stars */
+
   for(let k=shoot.length-1;k>=0;k--){const m=shoot[k];m.age+=dt;m.x+=m.vx*dt;m.y+=m.vy*dt;const f=1-m.age/m.life;if(f<=0){shoot.splice(k,1);continue}
     const L=m.len*f,g=cx.createLinearGradient(m.x,m.y,m.x-m.vx*L,m.y-m.vy*L);g.addColorStop(0,"rgba(255,248,230,"+f.toFixed(2)+")");g.addColorStop(1,"rgba(255,190,140,0)");
     cx.strokeStyle=g;cx.lineWidth=2;cx.lineCap="round";cx.beginPath();cx.moveTo(m.x,m.y);cx.lineTo(m.x-m.vx*L,m.y-m.vy*L);cx.stroke()}
-  /* meteors (catchable) and the satellite */
+
   for(let k=met.length-1;k>=0;k--){const m=met[k];m.age+=dt;m.x+=m.vx*dt;m.y+=m.vy*dt;
     if(m.x<-120||m.x>W+120||m.y>H){met.splice(k,1);continue}
     if(m.sat){cx.fillStyle="rgba(255,255,255,.9)";cx.fillRect(m.x-3,m.y-1.5,6,3);cx.fillStyle="rgba(120,190,255,.9)";cx.fillRect(m.x-10,m.y-1,6,2);cx.fillRect(m.x+4,m.y-1,6,2);
@@ -133,7 +124,7 @@ function tick(now){
     const h=cx.createRadialGradient(m.x,m.y,0,m.x,m.y,m.r*3);h.addColorStop(0,"rgba(255,250,225,1)");h.addColorStop(.35,"rgba(255,190,100,.85)");h.addColorStop(1,"rgba(255,120,40,0)");
     cx.fillStyle=h;cx.beginPath();cx.arc(m.x,m.y,m.r*3,0,6.3);cx.fill();
     if(Math.random()<.5)parts.push({x:m.x,y:m.y,vx:(Math.random()-.5)*.03,vy:(Math.random()-.5)*.03,age:0,life:500,r:1.2+Math.random()*1.6,c:"255,170,90"})}
-  /* sparks */
+
   for(let k=parts.length-1;k>=0;k--){const p=parts[k];p.age+=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=.00012*dt;const f=1-p.age/p.life;if(f<=0){parts.splice(k,1);continue}
     cx.fillStyle="rgba("+p.c+","+f.toFixed(2)+")";cx.beginPath();cx.arc(p.x,p.y,p.r*f+.3,0,6.3);cx.fill()}
 }

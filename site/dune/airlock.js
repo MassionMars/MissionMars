@@ -1,12 +1,9 @@
-    // =====================================================================
-    // 1. СОСТОЯНИЕ РЕСУРСОВ И ДАННЫЕ КРИЗИСОВ 4А И 4Б (КОМНАТА 4: AIRLOCK)
-    // =====================================================================
-    const gameState = {
-      life: 70,     // ❤️ Жизнь
-      energy: 80,   // ⚡ Энергия
-      shield: 75,   // 🛡️ Щит
-      science: 10,  // 🧬 Наука
-      hearts: 3,    // ❤️ Попытки
+const gameState = {
+      life: 70,
+      energy: 80,
+      shield: 75,
+      science: 10,
+      hearts: 3,
       currentCrisis: '4A',
       selectedOption: 1
     };
@@ -20,7 +17,7 @@
         options: {
           1: {
             title: 'Выйти в скафандрах и очистить панели под ветром',
-            lifeDelta: -15,    // тяжёлая работа и радиация
+            lifeDelta: -15,
             energyDelta: 25,
             shieldDelta: 0,
             scienceDelta: 0,
@@ -30,7 +27,7 @@
           2: {
             title: 'Свернуть панели и укрепить стены мешками с реголитом',
             lifeDelta: -10,
-            energyDelta: -5,   // панели свёрнуты
+            energyDelta: -5,
             shieldDelta: 25,
             scienceDelta: 0,
             minigameId: 8,
@@ -65,9 +62,6 @@
       }
     };
 
-    // =====================================================================
-    // 2. АНИМАЦИЯ АСТРОНАВТОВ НА ЗЕМЛЕ МАРСА + ИСЧЕЗАЮЩИЕ СЛЕДЫ НА ПЕСКЕ
-    // =====================================================================
     const surfaceWalkers = [
       {
         elId: 'surface-astro-1',
@@ -144,9 +138,6 @@
       requestAnimationFrame(updateSurfaceAstronauts);
     }
 
-    // =====================================================================
-    // 3. ЗВУКОВОЙ СИНТЕЗАТОР (WEB AUDIO API) И ОБНОВЛЕНИЕ РЕСУРСОВ
-    // =====================================================================
     let audioCtx = null;
     function ensureAudio() {
       if (!audioCtx) {
@@ -263,9 +254,6 @@
       });
     }
 
-    // =====================================================================
-    // 4. ПЕРЕКЛЮЧЕНИЕ КРИЗИСОВ 4А И 4Б И ЭКРАНА ИНСТРУКЦИЙ
-    // =====================================================================
     function buildAirlockRewardBadges(opt) {
       const items = [];
       if (opt.lifeDelta !== 0) {
@@ -298,7 +286,6 @@
         tab4A.className = 'px-4 sm:px-5 py-2 sm:py-2.5 rounded-2xl font-extrabold text-sm sm:text-lg border-[3px] border-transparent hover:border-[#231815] bg-[#f1f5f9] text-[#475569] transition cursor-pointer';
       }
 
-      // Визуальные акценты в интерьере Шлюза
       document.getElementById('hull-breach-visual').classList.toggle('hidden', crisisKey !== '4B');
       document.getElementById('airlock-top-light').setAttribute('fill', crisisKey === '4B' ? '#ef4444' : '#4ade80');
 
@@ -320,7 +307,6 @@
       resetToCrisisDilemma();
     }
 
-    // a won crisis leads to a new random one; after a loss the same crisis is offered again
     function nextCrisis() { selectAirlockCrisis(MMCrisis.pick(['4A', '4B'], gameState.currentCrisis)); }
     function afterResult() { if (gameState.lastWin) nextCrisis(); else resetToCrisisDilemma(); }
 
@@ -370,9 +356,6 @@
       }
     }
 
-    // =====================================================================
-    // 5. ДВИЖОК МИНИ-ИГР №7 («ОЧИСТКА ПАНЕЛЕЙ») И №8 («ЗАЛАТАЙ ОБШИВКУ»)
-    // =====================================================================
     let activeGameTimer = null;
     let activeAnimationFrame = null;
     let activeStormInterval = null;
@@ -450,7 +433,6 @@
       }, 100);
     }
 
-    // ---------------- МИНИ-ИГРА №7: «ОЧИСТКА ПАНЕЛЕЙ» (СТИРАНИЕ ОРАНЖЕВОГО ПЕСКА ЩЁТКОЙ) ----------------
     function initCleanPanelsGame() {
       const canvas = document.getElementById('sand-wipe-canvas');
       const ctx = canvas.getContext('2d');
@@ -459,7 +441,6 @@
       canvas.width = rect.width || 660;
       canvas.height = rect.height || 300;
 
-      // Разбиваем солнечную батарею на сетку ячеек песка (22 x 10), чтобы точно считать процент очистки
       const cols = 22;
       const rows = 10;
       const cellW = canvas.width / cols;
@@ -473,7 +454,7 @@
             c,
             x: c * cellW,
             y: r * cellH,
-            sandLevel: 1.0 // 1.0 = полностью засыпано песком, 0 = чисто
+            sandLevel: 1.0
           });
         }
       }
@@ -514,7 +495,6 @@
       };
       canvas.onmousedown = (e) => wipeAt(e.clientX, e.clientY);
 
-      // Буря периодически подсыпает немного песка обратно на случайные клетки
       activeStormInterval = setInterval(() => {
         if (!miniGameRunning) return;
         for (let k = 0; k < 6; k++) {
@@ -538,7 +518,7 @@
             ctx.save();
             ctx.fillStyle = `rgba(217, 119, 6, ${cell.sandLevel * 0.94})`;
             ctx.fillRect(cell.x - 0.5, cell.y - 0.5, cellW + 1, cellH + 1);
-            // Песчинки текстуры
+
             ctx.fillStyle = `rgba(146, 64, 14, ${cell.sandLevel * 0.65})`;
             ctx.beginPath();
             ctx.arc(cell.x + cellW * 0.35, cell.y + cellH * 0.45, 2.5, 0, Math.PI * 2);
@@ -547,7 +527,6 @@
           }
         }
 
-        // Для победы нужно очистить 88% поверхности панели (приводим к шкале 0..100%)
         const rawCleanRatio = cleanCount / sandGrid.length;
         const normalizedPct = Math.min(100, Math.round((rawCleanRatio / 0.88) * 100));
 
@@ -559,7 +538,6 @@
           return;
         }
 
-        // Отрисовка щётки астронавта под курсором
         ctx.save();
         ctx.font = '34px sans-serif';
         ctx.textAlign = 'center';
@@ -573,7 +551,6 @@
       activeAnimationFrame = requestAnimationFrame(renderSandLoop);
     }
 
-    // ---------------- МИНИ-ИГРА №8: «ЗАЛАТАЙ ОБШИВКУ» (4 ПЛИТЫ РЕГОЛИТА НА ТРЕЩИНЫ) ----------------
     function initPatchHullGame() {
       const cracksGrid = document.getElementById('hull-cracks-grid');
       const platesPool = document.getElementById('regolith-plates-pool');
@@ -622,7 +599,6 @@
         }
       }
 
-      // Создаём 4 мигающие красные трещины на стене базы
       CRACK_SPOTS.forEach((spot) => {
         const crackEl = document.createElement('div');
         crackEl.dataset.sealed = 'false';
@@ -644,7 +620,6 @@
           }
         };
 
-        // Также поддерживаем быстрый клик для удобства детей на тачпадах/телефонах
         crackEl.onclick = () => {
           const availablePlate =
             selectedPlateEl || platesPool.querySelector('button:not([disabled])');
@@ -656,7 +631,6 @@
         cracksGrid.appendChild(crackEl);
       });
 
-      // Создаём 4 защитные плиты из марсианского реголита внизу
       for (let i = 1; i <= 4; i++) {
         const plateBtn = document.createElement('button');
         plateBtn.type = 'button';
@@ -677,7 +651,7 @@
         plateBtn.addEventListener('click', () => {
           playSound('tick');
           selectedPlateEl = plateBtn;
-          // При клике по плите сразу латаем первую незакрытую трещину
+
           const firstOpenCrack = cracksGrid.querySelector('[data-sealed="false"]');
           if (firstOpenCrack) {
             applyPatchToCrack(firstOpenCrack, plateBtn);
@@ -688,9 +662,6 @@
       }
     }
 
-    // =====================================================================
-    // 6. ЗАВЕРШЕНИЕ МИНИ-ИГРЫ И НАЧИСЛЕНИЕ/СПИСАНИЕ РЕСУРСОВ AIRLOCK
-    // =====================================================================
     function finishMiniGame(isWin) {
       stopAnyRunningMiniGame();
 
@@ -714,7 +685,6 @@
         gameState.energy += optObj.energyDelta;
         gameState.shield += optObj.shieldDelta;
 
-        // Если очистили солнечные панели в игре №7, визуально убираем песок с панелей за окном
         if (optObj.minigameId === 7) {
           document.querySelectorAll('.ext-panel-sand').forEach((el) => {
             el.setAttribute('opacity', '0.08');
@@ -758,7 +728,6 @@
       }
     }
 
-    // Запуск при загрузке
     window.onload = () => {
       updateResourceHUD();
       DuneBridge.decorateRoom();
@@ -767,10 +736,7 @@
       selectAirlockCrisis(MMCrisis.pick(['4A', '4B']));
       requestAnimationFrame(updateSurfaceAstronauts);
     };
-  
 
-
-    // ===== MM2 wiring: second-crisis mini-games (ids 9-16) =====
     (function () {
       const _open = openTutorialForOption, _stop = stopAnyRunningMiniGame, _finish = finishMiniGame;
       const opt = () => AIRLOCK_CRISES[gameState.currentCrisis].options[gameState.selectedOption];
@@ -790,10 +756,10 @@
         if (!isNew()) { if (window.MM2) MM2.reset(); return _start(); }
         stopAnyRunningMiniGame(); ensureAudio();
         const id = opt().minigameId, T = MM2.meta[id].target;
-        currentScore = 0; targetScore_set(T); timeRemaining = 10.0; miniGameRunning = true;
+        currentScore = 0; targetScore_set(T); const TT = MM2.meta[id].time || 10; timeRemaining = TT; miniGameRunning = true;
         document.getElementById('airlock-tutorial-modal').classList.add('hidden');
         const box = document.getElementById('airlock-active-game-box'); box.classList.remove('hidden');
-        document.getElementById('game-timer-display').textContent = '10.0с';
+        document.getElementById('game-timer-display').textContent = TT.toFixed(1) + 'с';
         document.getElementById('game-time-bar').style.width = '100%';
         box.querySelectorAll('[id^="arena-game-"]').forEach((a) => a.classList.add('hidden'));
         window.MM2_HOOKS = {
@@ -803,12 +769,12 @@
           sfx: (k) => { try { playSound(k); } catch (e) {} }
         };
         MM2.run(id, box);
-        let lastWhole = 10;
+        let lastWhole = Math.ceil(TT);
         activeGameTimer = setInterval(() => {
           if (!miniGameRunning) return;
           timeRemaining = Math.max(0, timeRemaining - 0.1);
           document.getElementById('game-timer-display').textContent = timeRemaining.toFixed(1) + 'с';
-          document.getElementById('game-time-bar').style.width = (timeRemaining / 10) * 100 + '%';
+          document.getElementById('game-time-bar').style.width = (timeRemaining / TT) * 100 + '%';
           const c = Math.ceil(timeRemaining);
           if (c <= 3 && c > 0 && c !== lastWhole) { lastWhole = c; playSound('tick'); }
           if (timeRemaining <= 0) finishMiniGame(currentScore >= MM2.meta[id].target);
@@ -829,3 +795,13 @@
         }
       };
     })();
+
+(function () {
+  const M = { 7: ['4A', 1], 8: ['4A', 2], 15: ['4B', 1], 16: ['4B', 2] };
+  const o = window.onload;
+  window.onload = function () {
+    if (o) o();
+    const id = DuneBridge.arcade && DuneBridge.arcade(), m = M[id]; if (!m) return;
+    selectAirlockCrisis(m[0]); openTutorialForOption(m[1]);
+  };
+})();

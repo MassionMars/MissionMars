@@ -1,7 +1,3 @@
-/* Mars Dune Alpha — shared mechanism for the base hub and its rooms.
- * One state (life, energy, shield, science, hearts) and one list of solved crises are stored under "mm-dune",
- * so the hub, the laboratory and the airlock behave as one game. A room asks the site (the parent page) to
- * switch the frame; opened on its own, a page simply navigates to the sibling file. */
 (function () {
   "use strict";
   var KEY = "mm-dune", DEF = { life: 70, energy: 80, shield: 75, science: 10, hearts: 3 };
@@ -9,27 +5,30 @@
   var NAMES = { greenhouse: "Теплица", medbay: "Медпункт", lab: "Лаборатория", airlock: "Шлюз" };
   var ALL = [].concat(ROOMS.greenhouse, ROOMS.medbay, ROOMS.lab, ROOMS.airlock);
 
+  function arc() { try { var p = window.parent; return p && p !== window && p.__mmArc ? p.__mmArc : null; } catch (e) { return null; } }
   function mem() {
     try { var p = window.parent; if (p && p !== window) { p.__mmDune = p.__mmDune || {}; return p.__mmDune; } } catch (e) {}
     return window.__mmDune || (window.__mmDune = {});
   }
   function read() {
-    var s = null;
+    var s = null, A = arc();
+    if (A) { if (!A.s) A.s = {}; return A.s; }
     try { s = JSON.parse(localStorage.getItem(KEY) || "null"); } catch (e) {}
     if (!s || typeof s !== "object") s = mem().s || null;
     return s && typeof s === "object" ? s : {};
   }
   function write(s) {
+    var A = arc();
+    if (A) { s.life = DEF.life; s.energy = DEF.energy; s.shield = DEF.shield; s.hearts = 3; A.s = s; return; }
     try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) {}
     mem().s = s;
   }
   function num(v, d, lo, hi) { v = Number(v); return isFinite(v) ? Math.max(lo, Math.min(hi, Math.round(v))) : d; }
 
-  function post(msg) { try { if (window.parent && window.parent !== window) window.parent.postMessage(msg, "*"); } catch (e) {} }
+  function post(msg) { if (arc() && msg && msg.mmDune !== "go") return; try { if (window.parent && window.parent !== window) window.parent.postMessage(msg, "*"); } catch (e) {} }
   function pmx() { try { return window.parent && window.parent !== window ? window.parent.MMX : null; } catch (e) { return null; } }
   var SVGNS = "http://www.w3.org/2000/svg";
 
-  /* animated, volumetric HUD icons (inline SVG, gradients from one shared <defs>) */
   var ICONS = {
     life: '<path class="ol" d="M16 28C4 19 3 10 9 7c4-2 7 1 7 3 0-2 3-5 7-3 6 3 5 12-7 21z" fill="url(#dg-heart)"/><path d="M9 11c1-2 3-2 4-1" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".85"/>',
     energy: '<path class="ol bolt" d="M19 2 7 18h7l-2 12 13-17h-7z" fill="url(#dg-bolt)"/><path d="M17 5 10 16" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" opacity=".8"/>',
@@ -68,7 +67,7 @@
       var s = read(); s.done = Bridge.doneMap(); s.done[key] = 1; write(s);
       post({ mmDune: "done", key: key });
     },
-    /* result of one mini-game, for the day map and the records */
+
     mini: function (crisis, id, win, score, left) {
       post({ mmDune: "mini", crisis: String(crisis), id: Number(id) || 0, win: !!win, score: Number(score) || 0, left: Math.round((Number(left) || 0) * 10) / 10 });
     },
@@ -80,7 +79,7 @@
       if (window.parent && window.parent !== window) window.parent.postMessage({ mmDune: "go", room: room }, "*");
       else location.href = room + ".html";
     },
-    /* a small mission strip: solved crises, restart */
+
     chip: function (where) {
       var el = document.createElement("div");
       el.id = "dune-progress";
@@ -92,7 +91,7 @@
       document.body.appendChild(el); paint();
       window.addEventListener("focus", paint);
     },
-    /* keeps the cards clear of the top bars and makes the bars smaller on small windows (the site's own menus take room too) */
+
     fit: function () {
       var de = document.documentElement;
       de.classList.toggle("dune-sm", innerWidth < 760 || innerHeight < 640);
@@ -114,7 +113,7 @@
       if (window.ResizeObserver) { var ro = new ResizeObserver(function () { Bridge.fit(); }); document.querySelectorAll(".fixed.top-3").forEach(function (h) { ro.observe(h); }); }
       addEventListener("orientationchange", function () { setTimeout(Bridge.fit, 250); });
     },
-    /* swap HUD emoji for animated SVG icons; the heart row is repainted whenever the game rewrites it */
+
     icons: function () {
       var d = document.createElement("div"); d.innerHTML = DEFS; document.body.appendChild(d.firstChild);
       document.querySelectorAll(".fixed.top-3 span, #base-hud span").forEach(function (sp) {
@@ -136,13 +135,13 @@
         new MutationObserver(function () { paint(); }).observe(el, { childList: true, characterData: true, subtree: true });
         paint();
       });
-      /* a little pop on the counter that just changed */
+
       ["life", "energy", "shield", "science"].forEach(function (k) {
         var el = document.getElementById("hud-" + k); if (!el) return;
         new MutationObserver(function () { var b = el.parentNode; b.classList.remove("hud-pop"); void b.offsetWidth; b.classList.add("hud-pop"); }).observe(el, { childList: true, characterData: true, subtree: true });
       });
     },
-    /* floating dust motes over the whole page */
+
     dust: function () {
       if (matchMedia("(prefers-reduced-motion:reduce)").matches) return;
       for (var i = 0; i < 9; i++) {
@@ -151,7 +150,7 @@
         document.body.appendChild(m);
       }
     },
-    /* astronauts that stroll over the Martian ground and leave footprints that fade away (hub scene) */
+
     walkers: function (svg, list) {
       if (!svg) return;
       var tint = svg.querySelector("#scene-evening-tint"), fpl = document.createElementNS(SVGNS, "g"), lay = document.createElementNS(SVGNS, "g");
@@ -209,34 +208,38 @@
       var st = read(); if (st.fin) return; st.fin = 1; write(st);
       var m = document.createElement("div");
       m.setAttribute("style", "position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;background:rgba(35,24,21,.72);padding:16px");
-      m.innerHTML = '<div style="max-width:440px;text-align:center;background:#fffdf9;border:4px solid #231815;border-radius:28px;box-shadow:0 8px 0 #231815;padding:24px 22px;color:#231815;font-family:MMSans,system-ui,sans-serif"><div style="font-size:54px">🏆</div><div style="font-size:24px;font-weight:900;margin:6px 0">База Dune Alpha спасена!</div><p style="font-weight:700;font-size:15px;line-height:1.45;margin:0 0 14px">Ты решил все 8 кризисов: Теплица, Медпункт, Лаборатория и Шлюз работают.</p><p style="font-weight:900;font-size:18px;margin:0 0 14px">❤️ ' + Bridge.load().life + ' · ⚡ ' + Bridge.load().energy + ' · 🛡️ ' + Bridge.load().shield + '</p><button type="button" style="border:3px solid #231815;border-radius:16px;background:#fde047;font:900 16px MMSans,system-ui,sans-serif;padding:10px 20px;cursor:pointer;color:#231815;box-shadow:0 4px 0 #231815">Продолжить</button></div>';
+      m.innerHTML = '<div style="max-width:440px;text-align:center;background:#fffdf9;border:4px solid #231815;border-radius:28px;box-shadow:0 8px 0 #231815;padding:24px 22px;color:#231815;font-family:MMSans,system-ui,sans-serif"><div style="font-size:54px">🏆</div><div style="font-size:24px;font-weight:900;margin:6px 0">База MISSION MARS спасена!</div><p style="font-weight:700;font-size:15px;line-height:1.45;margin:0 0 14px">Ты решил все 8 кризисов: Теплица, Медпункт, Лаборатория и Шлюз работают.</p><p style="font-weight:900;font-size:18px;margin:0 0 14px">❤️ ' + Bridge.load().life + ' · ⚡ ' + Bridge.load().energy + ' · 🛡️ ' + Bridge.load().shield + '</p><button type="button" style="border:3px solid #231815;border-radius:16px;background:#fde047;font:900 16px MMSans,system-ui,sans-serif;padding:10px 20px;cursor:pointer;color:#231815;box-shadow:0 4px 0 #231815">Продолжить</button></div>';
       m.querySelector("button").onclick = function () { m.remove(); };
       document.body.appendChild(m);
     },
     names: NAMES
   };
 
-  /* ================= campaign: 15 sols, 2 sectors a sol ================= */
   var SECT = ["greenhouse", "medbay", "lab", "airlock"], DAYS = 15, SPECIAL = [1, 3, 6, 9, 12, 15];
-  /* win result per crisis option: [life, energy, shield]. Hard mode (v8): a win is worth about +7 in total. */
+
   var ECO = {
-    "1A": [[12, -4, 0],  [8, -1, 2]], "1B": [[14, -5, 0],  [9, -2, 1]],
-    "2A": [[7, -3, 3],  [2, -3, 9]], "2B": [[6, -3, 5],  [6, -1, 3]],
-    "3A": [[-3, -3, 12],  [-2, -1, 8]], "3B": [[4, -4, 7],  [2, -1, 6]],
-    "4A": [[-4, 14, 0],  [-3, 3, 7]], "4B": [[-4, 13, 1],  [-2, 4, 6]]
+    "1A": [[32, 4, -6],  [22, 5, -2]],
+    "1B": [[30, 6, -6],  [20, -2, 6]],
+    "2A": [[32, -6, 4],  [5, -2, 22]],
+    "2B": [[6, -6, 30],  [20, -2, 6]],
+    "3A": [[-6, 4, 32],  [-2, 5, 22]],
+    "3B": [[-6, 6, 30],  [6, -2, 20]],
+    "4A": [[-6, 32, 4],  [-2, 22, 5]],
+    "4B": [[6, 30, -6],  [-2, 20, 6]]
   };
-  var EVENTS = { 3: { k: "storm", d: [-3, -14, -4] }, 6: { k: "flare", d: [-7, -3, -15] }, 9: { k: "blackout", d: [-7, -9, -3] }, 12: { k: "cold", d: [-9, -14, -3] } };
-  var UPKEEP = [-2, -3, -2];
+  var EVENTS = { 3: { k: "storm", d: [-3, -15, -6] }, 6: { k: "flare", d: [-6, -4, -14] }, 9: { k: "blackout", d: [-7, -12, -5] }, 12: { k: "cold", d: [-8, -12, -4] } };
+  var UPKEEP = [-10, -10, -10];
   function cl(v) { return Math.max(0, Math.min(100, Math.round(v))); }
   function campNorm(c) {
     c = c && typeof c === "object" ? c : {};
     var o = {
       phase: ["new", "map", "pick", "play", "sum", "end"].indexOf(c.phase) >= 0 ? c.phase : "new",
       day: num(c.day, 1, 1, DAYS), lives: num(c.lives, 3, 0, 3), picked: [], sdone: {}, snap: null, faces: {}, skipped: {}, seen: {},
-      lab: num(c.lab, 0, 0, 99), rv: num(c.rv, 0, 0, 99), rvDay: num(c.rvDay, 0, 0, DAYS), replay: c.replay ? 1 : 0, ev: c.ev ? 1 : 0, fin: c.fin ? 1 : 0, pts: num(c.pts, 0, 0, 99999), sum: null
+      lab: num(c.lab, 0, 0, 99), wear: num(c.wear, 0, 0, 6), vis: {}, run: {}, rv: num(c.rv, 0, 0, 99), rvDay: num(c.rvDay, 0, 0, DAYS), replay: c.replay ? 1 : 0, ev: c.ev ? 1 : 0, fin: c.fin ? 1 : 0, finFilm: c.finFilm ? 1 : 0, cong: c.cong ? 1 : 0, pts: num(c.pts, 0, 0, 99999), sum: null
     };
     (Array.isArray(c.picked) ? c.picked : []).forEach(function (r) { if (SECT.indexOf(r) >= 0 && o.picked.indexOf(r) < 0 && o.picked.length < 2) o.picked.push(r); });
-    SECT.forEach(function (r) { if (c.sdone && c.sdone[r]) o.sdone[r] = { w: c.sdone[r].w ? 1 : 0, d: Array.isArray(c.sdone[r].d) ? c.sdone[r].d.slice(0, 3).map(Number) : [0, 0, 0] }; });
+    SECT.forEach(function (r) { if (c.vis && c.vis[r]) o.vis[r] = num(c.vis[r], 0, 0, DAYS); if (c.run && c.run[r]) o.run[r] = num(c.run[r], 0, 0, DAYS); });
+    SECT.forEach(function (r) { if (c.sdone && c.sdone[r]) o.sdone[r] = { w: c.sdone[r].w ? 1 : 0, q: c.sdone[r].q ? 1 : 0, d: Array.isArray(c.sdone[r].d) ? c.sdone[r].d.slice(0, 3).map(Number) : [0, 0, 0] }; });
     if (Array.isArray(c.snap) && c.snap.length === 3) o.snap = c.snap.map(function (v) { return cl(v); });
     if (c.faces && typeof c.faces === "object") for (var k in c.faces) { var n = +k; if (n >= 1 && n <= DAYS) o.faces[n] = num(c.faces[k], 1, 0, 2); }
     if (c.skipped && typeof c.skipped === "object") for (var k2 in c.skipped) if (c.skipped[k2]) o.skipped[k2] = 1;
@@ -252,46 +255,47 @@
   Bridge.res = function () { var g = Bridge.load(); return [g.life, g.energy, g.shield]; };
   Bridge.setRes = function (r) { var g = Bridge.load(); g.life = cl(r[0]); g.energy = cl(r[1]); g.shield = cl(r[2]); Bridge.save(g); return [g.life, g.energy, g.shield]; };
   Bridge.addRes = function (d) { var r = Bridge.res(); return Bridge.setRes([r[0] + d[0], r[1] + d[1], r[2] + d[2]]); };
-  /* crew happiness 0..100: the average, pulled down by the weakest resource */
+
   Bridge.happy = function (r) { var a = (r[0] + r[1] + r[2]) / 3, m = Math.min(r[0], r[1], r[2]); return Math.round(0.6 * a + 0.4 * m); };
   Bridge.face = function (h) { return h >= 70 ? 2 : h >= 50 ? 1 : 0; };
-  /* a lost crisis: the cost is still paid (half of it) and the main resource suffers */
-  Bridge.failVec = function (v) {
-    var o = v.map(function (x) { return Math.min(0, Math.round(x / 2)); }), i = 0;
-    for (var k = 1; k < 3; k++) if (v[k] > v[i]) i = k;
-    o[i] -= 4; return o;
-  };
-  /* writes the balanced numbers into a room's crisis table; kind: "hub" (Cost/Reward) or "delta" */
+
+  Bridge.failVec = function (v) { return window.DuneEcon.fail(v, Bridge.camp().day); };
+
   Bridge.eco = function (dict, kind) {
+    var E = window.DuneEcon, c = Bridge.camp(), res = Bridge.res();
     Object.keys(dict).forEach(function (key) {
       var rows = ECO[key]; if (!rows) return;
+      var room = E.ROOM[key.charAt(0)], q = E.quickIdx(rows);
+      var ctx = { day: c.day, res: res, tired: E.tired(c.run, room), neglect: E.neglect(c.vis, room, c.day) };
       [1, 2].forEach(function (n, i) {
-        var o = dict[key].options[n], v = rows[i]; if (!o) return;
+        var o = dict[key].options[n], v = E.scale(rows[i], ctx); if (!o) return;
         if (kind === "hub") { o.lifeReward = v[0]; o.energyCost = v[1]; o.shieldReward = v[2]; o.scienceReward = 0; }
         else { o.lifeDelta = v[0]; o.energyDelta = v[1]; o.shieldDelta = v[2]; o.scienceDelta = 0; }
-        o.vec = v;
+        o.vec = v; o.quick = i === q;
       });
     });
   };
-  /* sector: "open" can be played now, "done" already played this sol, "locked" was not chosen */
+  Bridge.eventVec = function (day) { var ev = EVENTS[day]; return ev ? window.DuneEcon.event(ev.d, day) : null; };
+
   Bridge.sector = function (room) {
     var c = Bridge.camp();
     if (SECT.indexOf(room) < 0) return "open";
+    if (arc()) return "open";
     if (c.phase !== "play") return window.parent !== window ? "locked" : "open";
     if (c.sdone[room]) return "done";
     return c.picked.indexOf(room) >= 0 ? "open" : "locked";
   };
-  /* result of a sector; after the second one the sol is over */
-  Bridge.sectorDone = function (room, win, d) {
+
+  Bridge.sectorDone = function (room, win, d, q) {
     var c = Bridge.camp(); if (c.phase !== "play" || c.sdone[room]) return { all: false, sci: 0 };
-    c.sdone[room] = { w: win ? 1 : 0, d: d || [0, 0, 0] };
+    c.sdone[room] = { w: win ? 1 : 0, q: q ? 1 : 0, d: d || [0, 0, 0] };
     var before = c.sci, all = c.picked.length === 2 && c.picked.every(function (r) { return c.sdone[r]; });
     if (room === "lab") c.lab++;
     if (all) c.phase = "sum";
     c = Bridge.campSave(c);
     return { all: all, sci: c.sci > before ? c.sci : 0 };
   };
-  /* rover ride: an extra activity, once a sol, costs energy; a finished ride counts as a science visit like the lab */
+
   var RV_COST = 8, RV_MIN = 10, RV_SHIELD = { A: 6, B: 4, C: 2, D: 0 };
   Bridge.RV_COST = RV_COST;
   Bridge.roverCan = function () {
@@ -318,9 +322,10 @@
     if (!t) { t = document.createElement("div"); t.id = "mm-toast"; t.setAttribute("role", "status"); document.body.appendChild(t); }
     t.textContent = txt; t.className = "show"; clearTimeout(Bridge._tt); Bridge._tt = setTimeout(function () { t.className = ""; }, ms || 2200);
   };
-  /* room entry guard: a locked sector shows a note instead of opening */
+
   var _go = Bridge.go;
   Bridge.go = function (room) {
+    if (arc()) { Bridge.toast("🎮 Режим пробы мини-игр"); return; }
     if (SECT.indexOf(room) >= 0) {
       var st = Bridge.sector(room);
       if (st !== "open") { Bridge.toast(st === "done" ? "Этот сектор уже исследован в этот сол" : "🔒 Сектор закрыт на этот сол"); return; }
@@ -328,12 +333,11 @@
     return _go(room);
   };
 
-  /* the pins exist before hub.js is loaded; until then a hover or tap does nothing instead of throwing */
   ["highlightCompartment", "syncPinHover", "openDepartment"].forEach(function (n) { if (!window[n]) window[n] = function () {}; });
+  Bridge.arcade = function () { var A = arc(); return A ? A.id : 0; };
   window.DuneBridge = Bridge;
 })();
 
-/* pause every CSS animation while the tab is hidden: saves battery on phones */
 (function () {
   function sync() { try { document.documentElement.classList.toggle("mm-idle", document.hidden); } catch (e) {} }
   document.addEventListener("visibilitychange", sync); sync();

@@ -1,4 +1,3 @@
-/* Awards album: stickers earned in the game. Locked slots show the silhouette of a themed emoji. */
 (function(){
 "use strict";
 var A=window.MM_ALBUM,KEY="mm-album",mem=null;

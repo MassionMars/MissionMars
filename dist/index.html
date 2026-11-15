@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self' blob:; connect-src 'self'; frame-src 'self' https://www.youtube-nocookie.com https://www.youtube.com; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; worker-src 'self'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MISSION MARS</title>
+<meta name="description" content="MISSION MARS. A hybrid physical + digital Mars-base survival game concept. Build. Survive. Explore.">
+<meta name="theme-color" content="#12080f">
+<meta name="google" content="notranslate">
+<meta http-equiv="Content-Language" content="en">
+<meta name="color-scheme" content="dark">
+<meta name="format-detection" content="telephone=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%23c4562e'/%3E%3Ccircle cx='11' cy='12' r='4' fill='%23e8743c'/%3E%3Ccircle cx='21' cy='20' r='3' fill='%23a8482a'/%3E%3C/svg%3E">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+<link rel="stylesheet" href="assets/fonts/fonts.css" integrity="sha384-aSxU5Lchanf/Wfo+ETO56AIv/9QRDVn5qzNWV69jS6MS/8aciwJR9m9RzdTcM6uA">
+<link rel="stylesheet" href="tokens.css" integrity="sha384-POWQZS1iPmKg2itSXGZeSY6BBEmEQrcW5gvtWIlfOhEd5XFs92KXjGjoh3xcFsy2">
+<link rel="stylesheet" href="style.css" integrity="sha384-/AU03ME00pwh4TMsNXo6eWLLlSFsj9n0T2ogcKuN5+SEvVYMWKEqdKRJjgwYNxKV">
+<link rel="stylesheet" href="responsive.css" integrity="sha384-xlB/NaS1tmtglbaF/+JsbtMKmwMxftSSOhlZsnW2PkQoeH977QhA9snWDbOFNNWd">
+<link rel="stylesheet" href="vault.css" integrity="sha384-6WUDuC+OYJ4SsIuyp7sFSBC0KAVNXqK/7dSbJB5OVTihWELM7XuAldnaSZHKA4fQ">
+<link rel="stylesheet" href="extras.css" integrity="sha384-UjgvR4gSac517VtdCrIEhGaGgGx3zGnL3I+zgg7aIfiL8gMoWip7DuT1DC7SGV0E">
+<link rel="stylesheet" href="dune/holo.css" integrity="sha384-FieJETKYfcz6MicDgb3J/fOR6FkeP+WILkSP0qN6Vyl2ELOB+RGLpIBusnZqOXkA"><link rel="stylesheet" href="dune-host.css" integrity="sha384-/1GSPAMmL3xH1IfG7RgGo1Xfp/Q44O4a2cW4t+wlgHFQaxCu1VBqxEG/wDtiK4pl">
+<link rel="stylesheet" href="skin.css" integrity="sha384-tEIr3B76w5UAlSNAfQr8fgcV4suOAuG5fQLuUY70GcDAypvrdALRg3vdrjpA8kQS">
+<link rel="stylesheet" href="album.css" integrity="sha384-1dWIRi6Y2H8RO0WV+czgpxSb25YyOPslwm9ahfLLtaopbmNEo5HHApnWQHnXPqYK"><link rel="stylesheet" href="inside-holo.css" integrity="sha384-QwTEfy2eiIG8nN3soWgdGk29c9Hrx0vd8azsSxywyV6l0miqPS5bkcef8F3c0iYw">
+</head>
+<body class="intro-on" data-page="home">
+<div id="intro"><canvas id="gl"></canvas><i id="iload"></i><div id="ititle">MISSION MARS</div><div id="isub"></div><div id="flash"></div><button id="skip"></button></div>
+<div id="skybg"></div><div id="ground" aria-hidden="true"></div>
+<canvas id="stars"></canvas>
+<div id="prog"></div>
+<a class="skip" id="skip-link" href="#main">Skip to content</a>
+<div class="top"><div class="logo">MISSION MARS</div><div class="top-r"><button id="mus" class="mus" type="button" aria-pressed="true" aria-label="Music">🎵</button><button id="snd" class="snd" type="button" aria-pressed="true" aria-label="Sound">🔊</button><div class="langs" id="langs" role="group" aria-label="Language"></div></div></div>
+<div id="glive" class="sr" role="status" aria-live="polite"></div>
+
+<main id="main" tabindex="-1">
+<section class="page on" id="p-home">
+  <div class="hero" id="hero">
+    <div class="pl"><div class="plin">
+      <i class="rg"></i><i class="rg" style="animation-delay:-3s"></i>
+      <div class="orbit"><span>🛰️</span></div>
+      <div class="atm"></div>
+      <div class="planet"><canvas id="mtex" width="1024" height="512"></canvas></div>
+    </div></div>
+    <h1 id="h1"></h1>
+    <p class="sub rise" style="--d:1.2s" data-t="sub"></p>
+    <div class="tokens" id="tokens"></div>
+    <div class="cta-row rise" style="--d:3.9s"><div class="ctaw"><button class="cta play" data-go="game" data-t="play"></button></div><button class="cta alt" data-go="about" data-t="cta"></button></div>
+    <div class="scroll rise" style="--d:4.3s">⌄</div>
+    <div class="hcredit rise" style="--d:4.5s">Mars image: NASA/JPL</div>
+  </div>
+</section>
+
+<section class="page" id="p-inside">
+  <h1 class="ptitle" data-t="iTitle"></h1>
+  <div class="chips" id="chips"></div>
+  <div id="secs"></div>
+</section>
+
+<section class="page" id="p-about">
+  <h1 class="ptitle" data-t="aTitle"></h1>
+  <div class="ab rv txt abs"><h2 class="abh" id="a-h1"></h2><p id="a-p1"></p></div>
+  <div class="ab rv txt abs"><h2 class="abh" id="a-h2"></h2><p id="a-p2"></p></div>
+  <div class="ab rv txt abs"><h2 class="abh" id="a-h3"></h2><p id="a-p3"></p></div>
+  <div class="ab rv txt abs"><h2 class="abh" id="a-h4"></h2><p id="a-p4"></p></div>
+  <div class="ab rv txt abs"><h2 class="abh" id="a-hAI"></h2><p class="abl" id="a-lead"></p><div class="ai" id="a-ai"></div></div>
+  <div class="ab rv abs abstory"><h2 class="abh" id="a-hS"></h2><p class="abl" id="a-pS"></p><div id="a-story"></div></div>
+  <div class="ab rv" style="text-align:center"><button class="cta" id="a-next" data-go="inside"></button></div>
+</section>
+<section class="page" id="p-game"></section>
+<section class="page" id="p-qr"></section>
+<section class="page" id="p-album"></section>
+</main>
+<div id="sheet" class="sheet" hidden></div>
+
+<nav class="bar" id="bar"></nav>
+
+<script src="safe.js" integrity="sha384-Q+dFc7FFFBPPna8SMVSY2nOIcmsR/+104kgMPkDJcyDnNzVwm/TIJoCLPKdS/YRk"></script>
+<script src="perf.js" integrity="sha384-tBwm0cNJdNPCwhGCLO6R91VPw2MP5cgRkBLGixVtGmoRqLvJpJlzVKEXul88ZADb"></script>
+<script src="qr-text.js" integrity="sha384-4wlPGRX2f8V18lA1RGlBXtMuxCpeQbigrlApDSdKcTCfuU1n2Lc2ZyJD8irBRAFw"></script>
+<script src="content.js" integrity="sha384-DPQZsgAxbCt6nrsUQvGTboiD4jJtsuDe1arodO/K9DfhtFvJpsv3KZeO0bYq1MBq"></script>
+<script src="qrdata.js" integrity="sha384-7EOdq/zRzToH4uByn+GXcB+jC063n8mpsBbnAmk3WlwAgAVVltJ8CgVdeF+3bLEE"></script>
+<script src="assets/images.js" integrity="sha384-yfdxw+a0CcMGfaHaLe6i4DpoVuy+whSbf3wzwFa4xN9MinXK4ODiNKCxfCh5bc0V"></script>
+<script src="media.js" integrity="sha384-rUUif/IfWHbYu9UCOLQcAxgrmxadSA+lyQqHJiKkC7dVTXnBBwecZeMHzTaKV4KK"></script>
+<script src="media2.js" integrity="sha384-OeirtwGHg18/VIJelV6Dnoj5fybulkamkR0wsfF75JK4QVf0CQLtIG/rwGcxOolD"></script>
+<script src="media3.js" integrity="sha384-Au2JkBSCsMLqZ/dGNiqhfCbZspofeQwmKSspT/dFFowaVG2lusZ+XYldP/DqS+gj"></script>
+<script src="imgs.js" integrity="sha384-TSTAkvaYyLLRPBXedkea8C1KMhPbkLkPGNgKMnDFXghtNhTDIwEUiuM6FaYV/l5K"></script>
+<script src="album-data.js" integrity="sha384-aJsM/yTeQXC//VX39m2ti970a3aHVfhj9vKXqNbgUuHflruLlvYkpQ5qAm09Kv4y"></script>
+<script src="app.js" integrity="sha384-86zTw7eW+XClibXmwhHrIGyqPX3f+ZffQf6RWM/MenWPWMGLuGRoYC95hip1GeW3"></script>
+<script src="assets/vendor/qrcode.js" integrity="sha384-2dlK4awmQOtL6kSBTEekoXdf2SRS4/4uVCXN6ZdcjZLzM9aOqsPiF0teV9KYHcUr"></script>
+<script src="qr.js" integrity="sha384-zc4bt37OK4zb3FEPUE9cZgeonApN8/k+RiFrN577XokQtyN2CHl5XMhNH/eZXny+"></script>
+<script src="vault.js" integrity="sha384-siBXQwPaD8vMR9pgUACXhHcoWWC9z4RCrACTFd5kWVYTSEIXYjoptYxV9PTpB0OR"></script>
+<script src="fx.js" integrity="sha384-nvmbbcslFvvdGVfW6TCFKSQT32JxX0el26W+56bnKY0oTj05s0DKES/rt8q9m1i7"></script>
+<script src="sky.js" integrity="sha384-aSXueOlrkq5tR0RY88js6N3hOl+/9ZVRaznA1viDXodAq/hfHrBla1fcZyiDgGlU"></script>
+<script src="music.js" integrity="sha384-Ui82I18OPFTznPjxeyfXU7NXDhRqy3DJhZCJFsKUeuobws3ELy9Wvl0hl//5tCqc"></script>
+<script src="video.js" integrity="sha384-Zj5bAkZRBoSbiKh8f0nkg0f4K3cIIdXLoLiMEmPBIgZI3Hu1lzChMzsEI7CxPB/X"></script>
+<script src="dune/comics-img.js" integrity="sha384-zA6OuWbNqAWBG7rP+jXIVeiAE9ZYDCmev05H3LeVnHGyxqPZ1mOwX/gwOMzhuLzl"></script>
+<script src="story.js" integrity="sha384-L0A6NqsC8iADsRUij4+g3yIsxavK9jsdNtsUf78ieCSZIs/x+hht2N9a8/0k92s8"></script>
+<script src="album.js" integrity="sha384-q3A7vk94Lm3clg/Kl8NdczAxqeZXLSBZRY3VG7ojZ9Q93ZkpOIT7pOULuZAxfDN5"></script>
+<script src="dune/holo.js" integrity="sha384-/zGFUFvtR4MZC8CVIRLrv1UsF1E/dmuhjVdVKB2411a/nqj8k7rnw94cs4dPVb21"></script>
+<script src="linkmenu.js" integrity="sha384-x8uJ21HZyseUE60b1dljL1WiNn0KeYWaF1QWG9N8O6p+K4gsjpAOuLw2Ksp/NGcx"></script>
+<script src="dune-host.js" integrity="sha384-jrpiX+r1eKy0/jSEZt10MNUivK6rJZSAeAz6fZl65LkgdTslfg1RddiPxH9eOG7V"></script>
+<script src="arcade.js" integrity="sha384-1P7j6HBwMhiQDv1sEjcLD8xS4Ang2TO2S68CYsQ5cL8a7OQm+sCWOBxF/aXvRUyH"></script>
+<script src="inside-holo.js" integrity="sha384-u3NkLh6jwHNQGjwWRlhvY3kGwnuABptvnAv3FXjUicOEwhdMcWbOkf20p9PG//6a"></script>
+<script src="intro.js" integrity="sha384-qxLsvilrErWu8G9L/Z6ljujgPlabFk7YxCtJTbVNsDMzlLhCbx/e4s39xIEuwecV"></script>
+<script src="pwa.js" integrity="sha384-PQgq6sN/hU8esY516IY9htHVJdTEMqbAvp7fxAFQVBmCaKJ3AH35g0tA9CuSSjkk"></script>
+</body>
+</html>

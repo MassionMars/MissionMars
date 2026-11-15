@@ -1,14 +1,10 @@
-/* Background music of MISSION: MARS — composed for the project and synthesised live with the Web Audio API,
- * so there are no audio files and no copyright to worry about. A slow D-dorian pad, a soft bass and a plucked
- * arpeggio through an echo; in the game the arpeggio gets busier. Music and sound effects have separate buttons
- * (#mus here, #snd in fx.js); both choices are remembered. Starts after the first tap (browser rule). */
 (function(){
 "use strict";
 const KEY="mm-music";
-let on=true,ctx=null,out=null,echo=null,timer=null,mood="calm",step=0,next=0,started=false,bar=0;
+let ducked=0,on=true,ctx=null,out=null,echo=null,timer=null,mood="calm",step=0,next=0,started=false,bar=0;
 try{on=localStorage.getItem(KEY)!=="0"}catch(_){}
 const hz=m=>440*Math.pow(2,(m-69)/12);
-/* chords as MIDI notes: Dm9 · Bbmaj7 · Gm7 · Asus4→A */
+
 const CH=[[50,57,60,64,65],[46,58,62,65,69],[43,55,58,62,65],[45,57,60,62,64]];
 const ARP=[0,2,3,4,3,2,1,2];
 function init(){
@@ -66,9 +62,9 @@ function start(){
   if(!init())return;
   ctx.resume().catch(()=>{});
   if(!started){started=true;next=ctx.currentTime+.1;step=0;timer=setInterval(schedule,200)}
-  /* coming back after a pause: do not schedule the silent time that went by */
+
   if(next<ctx.currentTime)next=ctx.currentTime+.1;
-  out.gain.cancelScheduledValues(ctx.currentTime);out.gain.setTargetAtTime(.9,ctx.currentTime,.6);
+  out.gain.cancelScheduledValues(ctx.currentTime);out.gain.setTargetAtTime(ducked?.1:.9,ctx.currentTime,ducked?.4:.6);
 }
 function stop(){
   if(!ctx)return;out.gain.cancelScheduledValues(ctx.currentTime);out.gain.setTargetAtTime(0,ctx.currentTime,.2);
@@ -87,5 +83,6 @@ document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest
 ["pointerdown","keydown","touchstart"].forEach(ev=>addEventListener(ev,()=>{if(on)start()},{passive:true}));
 document.addEventListener("visibilitychange",()=>{if(!ctx)return;if(document.hidden){stop();setTimeout(()=>{if(document.hidden)ctx.suspend().catch(()=>{})},900)}else if(on){start()}});
 document.addEventListener("mmlang",labels);document.addEventListener("DOMContentLoaded",labels);
-window.MMMusic={setOn,isOn:()=>on,state:()=>ctx?{gain:+out.gain.value.toFixed(2),ctx:ctx.state,ahead:+(next-ctx.currentTime).toFixed(2)}:null,mood:m=>{mood=m==="game"?"game":"calm"}};
+function duck(v){ducked=v?1:0;if(ctx&&on&&out){out.gain.cancelScheduledValues(ctx.currentTime);out.gain.setTargetAtTime(ducked?.1:.9,ctx.currentTime,.5)}}
+window.MMMusic={duck,setOn,isOn:()=>on,state:()=>ctx?{gain:+out.gain.value.toFixed(2),ctx:ctx.state,ahead:+(next-ctx.currentTime).toFixed(2)}:null,mood:m=>{mood=m==="game"?"game":"calm"}};
 })();

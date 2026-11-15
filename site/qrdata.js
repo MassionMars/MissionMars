@@ -123,8 +123,8 @@ const INFO={
     "url": "https://images.nasa.gov/details/PIA26574"
    },
    {
-    "label": "NASA: Mars facts",
-    "url": "https://science.nasa.gov/mars/facts/"
+    "label": "NASA: massive dust storm on Mars",
+    "url": "https://science.nasa.gov/solar-system/planets/mars/10-things-massive-dust-storm-on-mars/"
    }
   ]
  },
@@ -185,12 +185,12 @@ const INFO={
   },
   "source": [
    {
-    "label": "Space.com: chile peppers on the ISS",
-    "url": "https://www.space.com/chile-peppers-grow-international-space-station"
+    "label": "NASA: astronauts taste peppers grown in space",
+    "url": "https://www.nasa.gov/image-article/astronauts-have-first-taste-of-peppers-grown-space/"
    },
    {
-    "label": "NASA: International Space Station",
-    "url": "https://www.nasa.gov/missions/station/"
+    "label": "NASA: growing plants in space",
+    "url": "https://www.nasa.gov/humans-in-space/so-you-want-to-be-a-space-farmer/"
    }
   ]
  },
@@ -251,8 +251,8 @@ const INFO={
   },
   "source": [
    {
-    "label": "Space.com: Mars radiation and crewed missions",
-    "url": "https://www.space.com/18753-mars-radiation-manned-mission.html"
+    "label": "NASA: radiation exposure on a Mars trip (Curiosity RAD)",
+    "url": "https://science.nasa.gov/resource/radiation-exposure-comparisons-with-mars-trip-calculation/"
    },
    {
     "label": "NASA: Curiosity rover",
@@ -321,8 +321,8 @@ const INFO={
     "url": "https://science.nasa.gov/mission/mars-2020-perseverance/"
    },
    {
-    "label": "NASA: Mars facts",
-    "url": "https://science.nasa.gov/mars/facts/"
+    "label": "NASA JPL: Mars ice deposit",
+    "url": "https://www.jpl.nasa.gov/news/mars-ice-deposit-holds-as-much-water-as-lake-superior/"
    }
   ]
  },
@@ -387,8 +387,8 @@ const INFO={
     "url": "https://www.nasa.gov/wp-content/uploads/2020/10/g-281237_eclss_0.pdf"
    },
    {
-    "label": "NASA: International Space Station",
-    "url": "https://www.nasa.gov/missions/station/"
+    "label": "NASA: ISS water recovery milestone",
+    "url": "https://www.nasa.gov/missions/station/iss-research/nasa-achieves-water-recovery-milestone-on-international-space-station"
    }
   ]
  },
@@ -490,8 +490,8 @@ const INFO={
   },
   "source": [
    {
-    "label": "Space.com: 98% water recovery milestone",
-    "url": "https://space.com/astronaut-pee-iss-water-recycling-98-percent-milestone"
+    "label": "NASA: 98% water recovery milestone on the ISS",
+    "url": "https://www.nasa.gov/missions/station/iss-research/nasa-achieves-water-recovery-milestone-on-international-space-station"
    },
    {
     "label": "NASA: ECLSS fact sheet (PDF)",
@@ -678,7 +678,7 @@ const INFO={
   ]
  },
  "112": {
-  "icon": "🌕",
+  "icon": "🪨",
   "color": "#f4e7d4",
   "cat": {
    "en": "Moon & Artemis",
@@ -1351,7 +1351,7 @@ const INFO={
   ]
  },
  "123": {
-  "icon": "🌙",
+  "icon": "☄️",
   "color": "#d8d2c4",
   "cat": {
    "en": "Moon & Artemis",
@@ -1680,8 +1680,8 @@ const INFO={
   },
   "source": [
    {
-    "label": "NasaSpaceflight: Ingenuity's mission ends after 72 flights",
-    "url": "https://nasaspaceflight.com/2024/01/ingenuity-final-flight"
+    "label": "NASA: Ingenuity Mars Helicopter",
+    "url": "https://science.nasa.gov/mission/mars-2020-perseverance/ingenuity-mars-helicopter/"
    },
    {
     "label": "NASA Image and Video Library: PIA24542",
@@ -1806,8 +1806,8 @@ const INFO={
   },
   "source": [
    {
-    "label": "Space.com: CHAPEA-1 mission wraps up",
-    "url": "https://www.space.com/nasa-simulated-mars-mission-chapea-1-end"
+    "label": "NASA: first CHAPEA crew completes a year on simulated Mars",
+    "url": "https://www.nasa.gov/missions/analog-field-testing/chapea/first-mars-crew-completes-yearlong-simulated-red-planet-nasa-mission"
    }
   ]
  },
@@ -2362,8 +2362,8 @@ const INFO={
   },
   "source": [
    {
-    "label": "NASA: Mars facts",
-    "url": "https://science.nasa.gov/mars/facts/"
+    "label": "NASA JPL: Mars at a glance",
+    "url": "https://www.jpl.nasa.gov/news/press_kits/insight/launch/facts/mars-at-a-glance"
    }
   ]
  },
@@ -2412,8 +2412,8 @@ const INFO={
   },
   "source": [
    {
-    "label": "NASA: Mars facts",
-    "url": "https://science.nasa.gov/mars/facts/"
+    "label": "NASA: Olympus Mons, the largest volcano",
+    "url": "https://science.nasa.gov/image-article/apod-1997-september-15-olympus-mons-on-mars-the-largest-volcano/"
    }
   ]
  },
@@ -2462,13 +2462,13 @@ const INFO={
   },
   "source": [
    {
-    "label": "NASA: Mars facts",
-    "url": "https://science.nasa.gov/mars/facts/"
+    "label": "NASA: Valles Marineris",
+    "url": "https://science.nasa.gov/mars/valles-marineris/"
    }
   ]
  },
  "142": {
-  "icon": "🌑",
+  "icon": "🪨",
   "color": "#b8a89a",
   "cat": {
    "en": "Mars",
@@ -2712,8 +2712,8 @@ const INFO={
   },
   "source": [
    {
-    "label": "ESA: ExoMars",
-    "url": "https://www.esa.int/Science_Exploration/Human_and_Robotic_Exploration/Exploration/ExoMars"
+    "label": "NASA: ExoMars Trace Gas Orbiter",
+    "url": "https://science.nasa.gov/mission/tgo"
    }
   ]
  },

@@ -1,9 +1,9 @@
 (function(){
 if(typeof INFO==="undefined")return;
 const S={
-en:{db:"Database",photos:"{n} photos",quiz:"Mini quiz",fig:"PHOTO",see:"What you see",topic:"Topic",nasa:"NASA source",partner:"Partner image",next:"Next",back:"Back",toQuiz:"To the quiz",didyou:"Did you know?",pick:"Choose an answer",right:"Correct!",wrong:"Not quite.",finish:"Finish",done:"Topic complete!",nt:"Next topic",bc:"Back to the card",again:"Replay",close:"Close",hint:"Swipe or use the arrow keys",resR:"You got it right on the first try. Nice work!",resW:"Good try. Now you know the right answer.",resN:"You have seen every photo of this topic.",pn:"photos"},
-ru:{db:"База данных",photos:"{n} фото",quiz:"Мини-викторина",fig:"ФОТО",see:"Что на снимке",topic:"Тема",nasa:"Источник NASA",partner:"Снимок партнёра",next:"Далее",back:"Назад",toQuiz:"К викторине",didyou:"А вы знали?",pick:"Выберите ответ",right:"Верно!",wrong:"Почти.",finish:"Завершить",done:"Тема пройдена!",nt:"Следующая тема",bc:"К карточке",again:"Ещё раз",close:"Закрыть",hint:"Листайте или используйте стрелки",resR:"Ответ верный с первой попытки. Отлично!",resW:"Хорошая попытка. Теперь вы знаете правильный ответ.",resN:"Вы посмотрели все снимки этой темы.",pn:"фото"},
-tg:{db:"Пойгоҳи додаҳо",photos:"{n} акс",quiz:"Викторинаи хурд",fig:"АКС",see:"Дар акс чӣ аст",topic:"Мавзӯъ",nasa:"Манбаи NASA",partner:"Акси шарик",next:"Минбаъд",back:"Қафо",toQuiz:"Ба викторина",didyou:"Оё медонистед?",pick:"Ҷавобро интихоб кунед",right:"Дуруст!",wrong:"Қариб.",finish:"Анҷом",done:"Мавзӯъ гузашт!",nt:"Мавзӯи навбатӣ",bc:"Ба корт",again:"Боз як бор",close:"Пӯшидан",hint:"Варақ занед ё тирчаҳоро истифода баред",resR:"Ҷавоб аз бори аввал дуруст буд. Аъло!",resW:"Кӯшиши хуб. Акнун ҷавоби дурустро медонед.",resN:"Шумо ҳамаи аксҳои ин мавзӯъро дидед.",pn:"акс"},
+en:{db:"Database",photos:"{n} photos",quiz:"Mini quiz",fig:"PHOTO",see:"What you see",topic:"Topic",nasa:"NASA source",partner:"Partner image",next:"Next",back:"Back",toQuiz:"To the quiz",didyou:"Did you know?",pick:"Choose an answer",right:"Correct!",wrong:"Not quite.",finish:"Finish",done:"Topic complete!",nt:"Next topic",bc:"Back to the card",again:"Replay",close:"Close",hint:"Swipe or use the arrow keys",resR:"You got it right on the first try. Nice work!",resW:"Good try. Now you know the right answer.",resN:"You have seen every photo of this topic.",pn:"photos",lockH:"Locked: earn this card in Awards"},
+ru:{db:"База данных",photos:"{n} фото",quiz:"Мини-викторина",fig:"ФОТО",see:"Что на снимке",topic:"Тема",nasa:"Источник NASA",partner:"Снимок партнёра",next:"Далее",back:"Назад",toQuiz:"К викторине",didyou:"А вы знали?",pick:"Выберите ответ",right:"Верно!",wrong:"Почти.",finish:"Завершить",done:"Тема пройдена!",nt:"Следующая тема",bc:"К карточке",again:"Ещё раз",close:"Закрыть",hint:"Листайте или используйте стрелки",resR:"Ответ верный с первой попытки. Отлично!",resW:"Хорошая попытка. Теперь вы знаете правильный ответ.",resN:"Вы посмотрели все снимки этой темы.",pn:"фото",lockH:"Закрыто: получи эту карточку в «Наградах»"},
+tg:{db:"Пойгоҳи додаҳо",photos:"{n} акс",quiz:"Викторинаи хурд",fig:"АКС",see:"Дар акс чӣ аст",topic:"Мавзӯъ",nasa:"Манбаи NASA",partner:"Акси шарик",next:"Минбаъд",back:"Қафо",toQuiz:"Ба викторина",didyou:"Оё медонистед?",pick:"Ҷавобро интихоб кунед",right:"Дуруст!",wrong:"Қариб.",finish:"Анҷом",done:"Мавзӯъ гузашт!",nt:"Мавзӯи навбатӣ",bc:"Ба корт",again:"Боз як бор",close:"Пӯшидан",hint:"Варақ занед ё тирчаҳоро истифода баред",resR:"Ҷавоб аз бори аввал дуруст буд. Аъло!",resW:"Кӯшиши хуб. Акнун ҷавоби дурустро медонед.",resN:"Шумо ҳамаи аксҳои ин мавзӯъро дидед.",pn:"акс",lockH:"Баста: ин кортро дар «Мукофотҳо» гир"},
 };
 const t=()=>S[lang]||S.en;
 const tr=o=>o?(typeof o==="string"?o:(o[lang]||o.en||"")):"";
@@ -17,6 +17,7 @@ const ICON='<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="
 
 let root,stage,st=null,busy=false;
 
+const unlocked=c=>!window.MMAlbum||MMAlbum.has(+c);
 function photosOf(code){const d=INFO[code];return d?imgsFor(code,d.img).filter(x=>x&&x.src):[]}
 function build(code){
   const d=INFO[code],M=(window.MEDIA||{})[code],steps=photosOf(code).map((im,i,a)=>({k:"ph",im,i,n:a.length}));
@@ -121,7 +122,7 @@ function pickOpt(btn){
   const nb=root.querySelector(".v-b.primary");if(nb)nb.focus({preventScroll:true})}
 
 function nextTopic(){
-  const all=Object.keys(INFO).sort(),pool=all.filter(c=>photosOf(c).length);
+  const all=Object.keys(INFO).sort(),pool=all.filter(c=>photosOf(c).length&&unlocked(c));
   let i=pool.indexOf(st.code),n=pool[(i+1)%pool.length];
   if(typeof qrOpen==="function"||window.qrOpen)window.qrOpen(n);
   start(n,1)}
@@ -144,7 +145,7 @@ function onClick(e){
   else if(a==="again"){st.i=0;st.pick=null;st.first=null;st.order=shuffle([0,1,2]);busy=true;setTimeout(()=>{busy=false},480);render(-1)}}
 
 function open(code,from){
-  if(!INFO[code]||!photosOf(code).length)return;
+  if(!INFO[code]||!photosOf(code).length||!unlocked(code))return;
   make();
   const r=from&&from.getBoundingClientRect?from.getBoundingClientRect():null;
   root.style.setProperty("--ox",(r?r.left+r.width/2:innerWidth/2)+"px");
@@ -175,8 +176,9 @@ function refresh(){
 function button(code){
   const n=photosOf(code).length;if(!n)return"";
   const T=t();
+  if(!unlocked(code))return `<button class="dbbtn locked" type="button" data-vault data-locked="1" data-code="${esc(code)}"><span class="dbi">🔒</span><span class="dbt"><b>${esc(T.db)}</b><small>${esc(T.lockH)}</small></span><span class="dbq">→</span></button>`;
   return `<button class="dbbtn${isDone(code)?" done":""}" type="button" data-vault data-code="${esc(code)}"><span class="dbi">${ICON}</span><span class="dbt"><b>${esc(T.db)}</b><small>${esc(T.photos.replace("{n}",n))} · ${esc(T.quiz)}</small></span><span class="dbq">▶</span></button>`}
 
 setTimeout(marks,0);
-window.MMVault={open,refresh,button,done:isDone,count:c=>photosOf(c).length};
+window.MMVault={unlocked,open,refresh,button,done:isDone,count:c=>photosOf(c).length};
 })();

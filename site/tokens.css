@@ -1,0 +1,37 @@
+/* MISSION MARS design tokens and shared components. One font family (Inter subset, Latin + Cyrillic + Tajik) serves EN / RU / TJ. */
+:root{
+  --mm-ink:#231815;--mm-cream:#fffdf9;--mm-paper:#fff3e2;--mm-muted:#6b4a3a;
+  --mm-primary:#f97316;--mm-primary-d:#e0562c;--mm-accent:#fde047;
+  --mm-info:#0284c7;--mm-info-bg:#e0f2fe;
+  --mm-ok:#15803d;--mm-ok-bg:#dcfce7;
+  --mm-warn:#b45309;--mm-warn-bg:#fef3c7;
+  --mm-crit:#b91c1c;--mm-crit-bg:#fee2e2;
+  --mm-gain:#15803d;--mm-loss:#b91c1c;
+  --mm-fault:#6d28d9;--mm-fault-bg:#ede9fe;
+  --mm-r-s:10px;--mm-r-m:16px;--mm-r-l:22px;--mm-r-pill:999px;
+  --mm-sh-1:0 3px 0 var(--mm-ink);--mm-sh-2:0 5px 0 var(--mm-ink);--mm-sh-soft:0 14px 28px -12px rgba(0,0,0,.55);
+  --mm-gloss:linear-gradient(180deg,rgba(255,255,255,.62) 0%,rgba(255,255,255,.16) 40%,rgba(255,255,255,0) 56%,rgba(110,40,10,.16) 100%);
+  --mm-sp-1:4px;--mm-sp-2:8px;--mm-sp-3:12px;--mm-sp-4:16px;--mm-sp-5:24px;
+  --mm-t-h1:clamp(26px,5vw,40px);--mm-t-h2:clamp(20px,3.4vw,28px);--mm-t-h3:17px;--mm-t-body:15px;--mm-t-small:13px;--mm-t-tiny:11px;
+  --mm-lh:1.4;--mm-ease:cubic-bezier(.2,.8,.2,1);--mm-dur:.18s;
+}
+body{font-variant-numeric:tabular-nums;text-wrap:pretty}
+h1,h2,h3,.ptitle{text-wrap:balance;overflow-wrap:anywhere;hyphens:auto}
+.mm-note{--n:var(--mm-info);--nb:var(--mm-info-bg);display:flex;gap:var(--mm-sp-3);align-items:flex-start;padding:var(--mm-sp-3) var(--mm-sp-4);border-radius:var(--mm-r-m);background:var(--mm-gloss),var(--nb);border:3px solid var(--mm-ink);box-shadow:inset 7px 0 0 var(--n),var(--mm-sh-1);color:var(--mm-ink);font-size:var(--mm-t-small);font-weight:700;line-height:var(--mm-lh);overflow-wrap:anywhere}
+.mm-note>b{color:var(--n)}
+.mm-note.is-ok{--n:var(--mm-ok);--nb:var(--mm-ok-bg)}
+.mm-note.is-warn{--n:var(--mm-warn);--nb:var(--mm-warn-bg)}
+.mm-note.is-crit{--n:var(--mm-crit);--nb:var(--mm-crit-bg)}
+.mm-note.is-gain{--n:var(--mm-gain);--nb:var(--mm-ok-bg)}
+.mm-note.is-loss{--n:var(--mm-loss);--nb:var(--mm-crit-bg)}
+.mm-note.is-fault{--n:var(--mm-fault);--nb:var(--mm-fault-bg)}
+.mm-note.is-crit{animation:mmAlert 1.6s ease-in-out 2}
+@keyframes mmAlert{50%{box-shadow:inset 7px 0 0 var(--n),0 0 0 4px rgba(220,38,38,.35)}}
+.mm-rise{animation:mmRise .38s var(--mm-ease) both}
+@keyframes mmRise{from{opacity:0;transform:translateY(12px) scale(.985)}}
+.mm-press{transition:transform var(--mm-dur) var(--mm-ease),box-shadow var(--mm-dur) var(--mm-ease)}
+.mm-press:hover{transform:translateY(-2px);box-shadow:var(--mm-sh-2)}
+.mm-press:active{transform:translateY(2px);box-shadow:0 1px 0 var(--mm-ink)}
+:focus-visible{outline:3px solid var(--mm-ink);outline-offset:2px;border-radius:6px}
+@media(prefers-reduced-motion:reduce){.mm-rise,.mm-note.is-crit{animation:none}.mm-press{transition:none}}
+body.lite .mm-rise,body.lite .mm-note.is-crit{animation:none}

@@ -1,12 +1,9 @@
-    // =====================================================================
-    // 1. СОСТОЯНИЕ РЕСУРСОВ И ДАННЫЕ КРИЗИСОВ 3А И 3Б (КОМНАТА 3: ЛАБОРАТОРИЯ)
-    // =====================================================================
-    const gameState = {
-      life: 70,     // ❤️ Жизнь
-      energy: 80,   // ⚡ Энергия
-      shield: 75,   // 🛡️ Щит
-      science: 10,  // 🧬 Наука
-      hearts: 3,    // ❤️ Попытки
+const gameState = {
+      life: 70,
+      energy: 80,
+      shield: 75,
+      science: 10,
+      hearts: 3,
       currentCrisis: '3A',
       selectedOption: 1
     };
@@ -21,7 +18,7 @@
           1: {
             title: 'Направить всю мощность компьютера на расчёт защиты',
             energyDelta: -15,
-            lifeDelta: -5,     // учёные устали
+            lifeDelta: -5,
             shieldDelta: 20,
             scienceDelta: 0,
             minigameId: 5,
@@ -31,7 +28,7 @@
             title: 'Отправить ровер на разведку кратера, пока есть связь',
             energyDelta: -10,
             lifeDelta: -8,
-            shieldDelta: 0,    // много науки, но щит не вырос!
+            shieldDelta: 0,
             scienceDelta: 0,
             minigameId: 6,
             minigameTag: '🚜 Игра №6: Маршрут ровера (10с)'
@@ -50,7 +47,7 @@
             shieldDelta: 0,
             scienceDelta: 0,
             minigameId: 13,
-            minigameTag: '💡 Реактор: погаси огни (10с)'
+            minigameTag: '💡 Реактор: кабели (10с)'
           },
           2: {
             title: 'Найти залежи льда датчиком',
@@ -65,9 +62,6 @@
       }
     };
 
-    // =====================================================================
-    // 2. АНИМАЦИЯ АСТРОНАВТОВ НА ЗЕМЛЕ МАРСА + ИСЧЕЗАЮЩИЕ СЛЕДЫ НА ПЕСКЕ
-    // =====================================================================
     const surfaceWalkers = [
       {
         elId: 'surface-astro-1',
@@ -110,7 +104,6 @@
 
       layer.appendChild(fp);
 
-      // Удаляем след из DOM после завершения плавного затухания (4.5 сек)
       setTimeout(() => {
         if (fp.parentNode) fp.parentNode.removeChild(fp);
       }, 4500);
@@ -138,7 +131,7 @@
 
         w.stepCounter++;
         if (w.stepCounter % 26 === 0) {
-          // Оставляем след позади пяток астронавта на марсианском грунте
+
           spawnFootprint(w.x - w.dir * 8, w.y + 28, w.stepCounter / 26);
         }
       });
@@ -146,9 +139,6 @@
       requestAnimationFrame(updateSurfaceAstronauts);
     }
 
-    // =====================================================================
-    // 3. ЗВУКОВОЙ СИНТЕЗАТОР (WEB AUDIO API) И ОБНОВЛЕНИЕ РЕСУРСОВ
-    // =====================================================================
     let audioCtx = null;
     function ensureAudio() {
       if (!audioCtx) {
@@ -258,9 +248,6 @@
       });
     }
 
-    // =====================================================================
-    // 4. ПЕРЕКЛЮЧЕНИЕ КРИЗИСОВ 3А И 3Б И ЭКРАНА ИНСТРУКЦИЙ
-    // =====================================================================
     function buildLabRewardBadges(opt) {
       const items = [];
       if (opt.energyDelta !== 0) {
@@ -295,7 +282,6 @@
         tab3A.className = 'px-4 sm:px-5 py-2 sm:py-2.5 rounded-2xl font-extrabold text-sm sm:text-lg border-[3px] border-transparent hover:border-[#231815] bg-[#f1f5f9] text-[#475569] transition cursor-pointer';
       }
 
-      // Визуальные акценты в интерьере Лаборатории под выбранный кризис
       document.getElementById('ice-laser-beam').classList.toggle('hidden', crisisKey !== '3B');
       document.getElementById('solar-flare-aura').setAttribute('opacity', crisisKey === '3A' ? '0.28' : '0.08');
 
@@ -317,7 +303,6 @@
       resetToCrisisDilemma();
     }
 
-    // a won crisis leads to a new random one; after a loss the same crisis is offered again
     function nextCrisis() { selectLabCrisis(MMCrisis.pick(['3A', '3B'], gameState.currentCrisis)); }
     function afterResult() { if (gameState.lastWin) nextCrisis(); else resetToCrisisDilemma(); }
 
@@ -367,9 +352,6 @@
       }
     }
 
-    // =====================================================================
-    // 5. ДВИЖОК МИНИ-ИГР №5 («ПОЙМАЙ ВОЛНУ») И №6 («МАРШРУТ РОВЕРА») — 10 СЕК
-    // =====================================================================
     let activeGameTimer = null;
     let activeAnimationFrame = null;
     let miniGameRunning = false;
@@ -444,7 +426,6 @@
       }, 100);
     }
 
-    // ---------------- МИНИ-ИГРА №5: «ПОЙМАЙ ВОЛНУ» (СИНУСОИДЫ) ----------------
     function initCatchWaveGame() {
       const canvas = document.getElementById('wave-canvas');
       const ctx = canvas.getContext('2d');
@@ -455,13 +436,12 @@
       canvas.width = rect.width || 680;
       canvas.height = rect.height || 260;
 
-      // Выбираем случайную целевую частоту (от 28 до 88) и ставим ползунок подальше от неё
       const targetVal = Math.floor(28 + Math.random() * 58);
       const startVal = targetVal > 55 ? 18 : 92;
       slider.value = String(startVal);
 
       let phase = 0;
-      let holdProgress = 0; // 0..100 (набирается при точном совпадении частот)
+      let holdProgress = 0;
       let soundCooldown = 0;
 
       function renderWaveLoop() {
@@ -473,7 +453,6 @@
 
         syncBadge.textContent = `Точность: ${matchPct}%`;
 
-        // Если две синусоиды практически совпали в одну линию (diff <= 6)
         if (diff <= 6) {
           holdProgress = Math.min(100, holdProgress + 1.35);
           syncBadge.className = 'px-3 py-1 rounded-xl bg-[#4ade80] border-2 border-[#231815] font-extrabold text-xs sm:text-sm text-[#231815]';
@@ -495,7 +474,6 @@
           return;
         }
 
-        // Отрисовка сетки осциллографа
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.strokeStyle = 'rgba(56, 189, 248, 0.16)';
         ctx.lineWidth = 1;
@@ -518,7 +496,6 @@
         const targetAmp = canvas.height * 0.28;
         const userAmp = canvas.height * (0.28 + ((userVal - targetVal) / 100) * 0.14);
 
-        // 1. Эталонная ЗЕЛЁНАЯ синусоида
         ctx.save();
         ctx.beginPath();
         for (let x = 0; x <= canvas.width; x += 4) {
@@ -532,7 +509,6 @@
         ctx.stroke();
         ctx.restore();
 
-        // 2. Управляемая ЖЁЛТАЯ синусоида
         ctx.save();
         ctx.beginPath();
         const phaseOffset = (userVal - targetVal) * 0.06;
@@ -548,7 +524,6 @@
         ctx.stroke();
         ctx.restore();
 
-        // Подсказка прямо на экране осциллографа при совпадении
         if (diff <= 6) {
           ctx.save();
           ctx.fillStyle = '#4ade80';
@@ -565,7 +540,6 @@
       activeAnimationFrame = requestAnimationFrame(renderWaveLoop);
     }
 
-    // Позволяем крутить ползунок волны стрелками клавиатуры
     window.addEventListener('keydown', (e) => {
       if (!miniGameRunning) return;
       const crisisObj = LAB_CRISES[gameState.currentCrisis];
@@ -580,7 +554,6 @@
       }
     });
 
-    // ---------------- МИНИ-ИГРА №6: «МАРШРУТ РОВЕРА» (НАРИСОВАТЬ ПУТЬ ДО ЛЬДА) ----------------
     let roverRouteResetFn = null;
 
     function resetRoverRouteAttempt() {
@@ -600,7 +573,6 @@
       const startZone = { x: 72, y: canvas.height * 0.72, r: 34 };
       const goalZone = { x: canvas.width - 78, y: canvas.height * 0.28, r: 36 };
 
-      // 4 красных марсианских валуна между стартом и синим льдом
       const rocks = [
         { x: canvas.width * 0.30, y: canvas.height * 0.68, r: 32 },
         { x: canvas.width * 0.46, y: canvas.height * 0.30, r: 34 },
@@ -651,14 +623,12 @@
         const pt = getCanvasPoint(clientX, clientY);
         pathPoints.push(pt);
 
-        // Процент приближения к синему камню (льду)
         const totalDist = Math.hypot(goalZone.x - startZone.x, goalZone.y - startZone.y);
         const remainDist = Math.hypot(goalZone.x - pt.x, goalZone.y - pt.y);
         const pct = Math.max(0, Math.min(95, Math.round((1 - remainDist / totalDist) * 100)));
         document.getElementById('game-score-current').textContent = `${pct}%`;
         document.getElementById('game-goal-bar').style.width = `${pct}%`;
 
-        // Проверка столкновения линии с красными валунами
         for (const rock of rocks) {
           if (Math.hypot(pt.x - rock.x, pt.y - rock.y) < rock.r - 3) {
             playSound('bad');
@@ -674,7 +644,6 @@
           }
         }
 
-        // Проверка достижения синего камня (льда)
         if (Math.hypot(pt.x - goalZone.x, pt.y - goalZone.y) <= goalZone.r) {
           isDrawing = false;
           isDrivingWin = true;
@@ -709,7 +678,6 @@
         if (!miniGameRunning) return;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Фоновые изолинии кратера Марса
         ctx.strokeStyle = 'rgba(124, 45, 18, 0.35)';
         ctx.lineWidth = 2;
         ctx.beginPath();
@@ -719,7 +687,6 @@
         ctx.arc(canvas.width / 2, canvas.height / 2, 190, 0, Math.PI * 2);
         ctx.stroke();
 
-        // Отрисовка проведённого игроком маршрута ровера
         if (pathPoints.length > 1) {
           ctx.save();
           ctx.beginPath();
@@ -740,7 +707,6 @@
           ctx.restore();
         }
 
-        // Зелёная зона СТАРТА
         ctx.save();
         ctx.beginPath();
         ctx.arc(startZone.x, startZone.y, startZone.r, 0, Math.PI * 2);
@@ -755,7 +721,6 @@
         ctx.fillText('СТАРТ', startZone.x, startZone.y + startZone.r + 16);
         ctx.restore();
 
-        // Голубая зона ФИНИША (Синий камень — марсианский лёд)
         ctx.save();
         ctx.beginPath();
         ctx.arc(goalZone.x, goalZone.y, goalZone.r, 0, Math.PI * 2);
@@ -765,7 +730,6 @@
         ctx.strokeStyle = '#231815';
         ctx.stroke();
 
-        // Многогранный синий кристалл льда
         ctx.beginPath();
         ctx.moveTo(goalZone.x, goalZone.y - 20);
         ctx.lineTo(goalZone.x + 18, goalZone.y - 6);
@@ -785,7 +749,6 @@
         ctx.fillText('🧊 СИНИЙ ЛЁД', goalZone.x, goalZone.y + goalZone.r + 16);
         ctx.restore();
 
-        // Красные марсианские валуны (препятствия)
         rocks.forEach((r) => {
           ctx.save();
           ctx.beginPath();
@@ -796,7 +759,6 @@
           ctx.strokeStyle = '#231815';
           ctx.stroke();
 
-          // Грани валуна
           ctx.beginPath();
           ctx.arc(r.x - 7, r.y - 7, r.r * 0.45, 0, Math.PI * 2);
           ctx.fillStyle = '#f87171';
@@ -809,7 +771,6 @@
           ctx.restore();
         });
 
-        // Позиция иконки ровера (на старте или едет по построенной линии)
         let roverPos = { x: startZone.x, y: startZone.y };
         if (isDrivingWin && pathPoints.length > 0) {
           roverAnimIdx = Math.min(pathPoints.length - 1, roverAnimIdx + Math.max(2, Math.ceil(pathPoints.length / 18)));
@@ -833,9 +794,6 @@
       activeAnimationFrame = requestAnimationFrame(renderRoverMapLoop);
     }
 
-    // =====================================================================
-    // 6. ЗАВЕРШЕНИЕ МИНИ-ИГРЫ И НАЧИСЛЕНИЕ/СПИСАНИЕ РЕСУРСОВ ЛАБОРАТОРИИ
-    // =====================================================================
     function finishMiniGame(isWin) {
       stopAnyRunningMiniGame();
 
@@ -898,7 +856,6 @@
       }
     }
 
-    // Запуск при загрузке
     window.onload = () => {
       updateResourceHUD();
       DuneBridge.decorateRoom();
@@ -907,10 +864,7 @@
       selectLabCrisis(MMCrisis.pick(['3A', '3B']));
       requestAnimationFrame(updateSurfaceAstronauts);
     };
-  
 
-
-    // ===== MM2 wiring: second-crisis mini-games (ids 9-16) =====
     (function () {
       const _open = openTutorialForOption, _stop = stopAnyRunningMiniGame, _finish = finishMiniGame;
       const opt = () => LAB_CRISES[gameState.currentCrisis].options[gameState.selectedOption];
@@ -930,10 +884,10 @@
         if (!isNew()) { if (window.MM2) MM2.reset(); return _start(); }
         stopAnyRunningMiniGame(); ensureAudio();
         const id = opt().minigameId, T = MM2.meta[id].target;
-        currentScore = 0; targetScore_set(T); timeRemaining = 10.0; miniGameRunning = true;
+        currentScore = 0; targetScore_set(T); const TT = MM2.meta[id].time || 10; timeRemaining = TT; miniGameRunning = true;
         document.getElementById('lab-tutorial-modal').classList.add('hidden');
         const box = document.getElementById('lab-active-game-box'); box.classList.remove('hidden');
-        document.getElementById('game-timer-display').textContent = '10.0с';
+        document.getElementById('game-timer-display').textContent = TT.toFixed(1) + 'с';
         document.getElementById('game-time-bar').style.width = '100%';
         box.querySelectorAll('[id^="arena-game-"]').forEach((a) => a.classList.add('hidden'));
         window.MM2_HOOKS = {
@@ -943,12 +897,12 @@
           sfx: (k) => { try { playSound(k); } catch (e) {} }
         };
         MM2.run(id, box);
-        let lastWhole = 10;
+        let lastWhole = Math.ceil(TT);
         activeGameTimer = setInterval(() => {
           if (!miniGameRunning) return;
           timeRemaining = Math.max(0, timeRemaining - 0.1);
           document.getElementById('game-timer-display').textContent = timeRemaining.toFixed(1) + 'с';
-          document.getElementById('game-time-bar').style.width = (timeRemaining / 10) * 100 + '%';
+          document.getElementById('game-time-bar').style.width = (timeRemaining / TT) * 100 + '%';
           const c = Math.ceil(timeRemaining);
           if (c <= 3 && c > 0 && c !== lastWhole) { lastWhole = c; playSound('tick'); }
           if (timeRemaining <= 0) finishMiniGame(currentScore >= MM2.meta[id].target);
@@ -969,3 +923,13 @@
         }
       };
     })();
+
+(function () {
+  const M = { 5: ['3A', 1], 6: ['3A', 2], 13: ['3B', 1], 14: ['3B', 2] };
+  const o = window.onload;
+  window.onload = function () {
+    if (o) o();
+    const id = DuneBridge.arcade && DuneBridge.arcade(), m = M[id]; if (!m) return;
+    selectLabCrisis(m[0]); openTutorialForOption(m[1]);
+  };
+})();

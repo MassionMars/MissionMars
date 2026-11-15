@@ -11,7 +11,7 @@ window.imgsFor=function(code,remote){
     const r=window.IMG_BY_ID[s[0]];
     if(r)out.push({id:s[0],src:r.src,cap:s[1],desc:s[2],credit:r.credit});
   }
-  // photos added later by the fetch script that no slide uses yet
+
   for(const x of reg[code]||[])if(!window.IMG_USED[x.id])out.push(x);
   if(out.length)return out;
   if(!remote)return[];

@@ -1,5 +1,3 @@
-/* MISSION: MARS look (v3 "Dune Alpha" skin): a warm Martian world drawn like the base illustration.
- * Thick dark outlines, glossy convex shapes, soft grain, small living animations. Loaded last, so it re-themes the whole site. */
 :root{
   --bg:#d9825f;--bg2:#fff3e2;--rust:#e0562c;--ochre:#fcd34d;--bone:#2b1710;--mute:#7b4a38;--line:#231815;--vio:#9b6bff;
   --ink:#231815;--cream:#fffdf9;--paper:#fff3e2;--sun:#fde047;--orange:#f97316;--sky1:#f4c3b0;--sky2:#e9a287;--sand:#d9825f;--soil:#b8532f;

@@ -116,3 +116,5 @@ to{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1.3) rotate(160deg)}
   #vault,#vault *{animation-duration:.01s!important;animation-delay:0s!important;transition-duration:.01s!important}
   .v-ph img,.v-bg::before,.v-bg::after,.dbbtn::after{animation:none!important}
 }
+.dbbtn.locked{filter:grayscale(.85);opacity:.82}
+.dbbtn.locked .dbi{font-size:22px}

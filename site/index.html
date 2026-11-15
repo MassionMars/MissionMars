@@ -5,8 +5,8 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self' blob:; connect-src 'self'; frame-src 'self' https://www.youtube-nocookie.com https://www.youtube.com; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; worker-src 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>MISSION: MARS</title>
-<meta name="description" content="MISSION: MARS. A hybrid physical + digital Mars-base survival game concept. Build. Survive. Explore.">
+<title>MISSION MARS</title>
+<meta name="description" content="MISSION MARS. A hybrid physical + digital Mars-base survival game concept. Build. Survive. Explore.">
 <meta name="theme-color" content="#12080f">
 <meta name="google" content="notranslate">
 <meta http-equiv="Content-Language" content="en">
@@ -19,21 +19,22 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
 <link rel="stylesheet" href="assets/fonts/fonts.css">
+<link rel="stylesheet" href="tokens.css">
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="responsive.css">
 <link rel="stylesheet" href="vault.css">
 <link rel="stylesheet" href="extras.css">
-<link rel="stylesheet" href="dune-host.css">
+<link rel="stylesheet" href="dune/holo.css"><link rel="stylesheet" href="dune-host.css">
 <link rel="stylesheet" href="skin.css">
-<link rel="stylesheet" href="album.css">
+<link rel="stylesheet" href="album.css"><link rel="stylesheet" href="inside-holo.css">
 </head>
 <body class="intro-on" data-page="home">
-<div id="intro"><canvas id="gl"></canvas><i id="iload"></i><div id="ititle">MISSION: MARS</div><div id="isub"></div><div id="flash"></div><button id="skip"></button></div>
+<div id="intro"><canvas id="gl"></canvas><i id="iload"></i><div id="ititle">MISSION MARS</div><div id="isub"></div><div id="flash"></div><button id="skip"></button></div>
 <div id="skybg"></div><div id="ground" aria-hidden="true"></div>
 <canvas id="stars"></canvas>
 <div id="prog"></div>
 <a class="skip" id="skip-link" href="#main">Skip to content</a>
-<div class="top"><div class="logo">MISSION: MARS</div><div class="top-r"><button id="mus" class="mus" type="button" aria-pressed="true" aria-label="Music">🎵</button><button id="snd" class="snd" type="button" aria-pressed="true" aria-label="Sound">🔊</button><div class="langs" id="langs" role="group" aria-label="Language"></div></div></div>
+<div class="top"><div class="logo">MISSION MARS</div><div class="top-r"><button id="mus" class="mus" type="button" aria-pressed="true" aria-label="Music">🎵</button><button id="snd" class="snd" type="button" aria-pressed="true" aria-label="Sound">🔊</button><div class="langs" id="langs" role="group" aria-label="Language"></div></div></div>
 <div id="glive" class="sr" role="status" aria-live="polite"></div>
 
 <main id="main" tabindex="-1">
@@ -62,14 +63,12 @@
 
 <section class="page" id="p-about">
   <h1 class="ptitle" data-t="aTitle"></h1>
-  <p class="ab rv greet" id="a-hi"></p>
-  <p class="ab rv txt" id="a-p1"></p>
-  <p class="ab rv txt" id="a-p2"></p>
-  <p class="ab rv txt" id="a-p3"></p>
-  <p class="ab rv txt lead2" id="a-lead"></p>
-  <div class="ai" id="a-ai"></div>
-  <p class="ab rv txt" id="a-p4"></p>
-  <p class="ab rv end" id="a-end"></p>
+  <div class="ab rv txt abs"><h2 class="abh" id="a-h1"></h2><p id="a-p1"></p></div>
+  <div class="ab rv txt abs"><h2 class="abh" id="a-h2"></h2><p id="a-p2"></p></div>
+  <div class="ab rv txt abs"><h2 class="abh" id="a-h3"></h2><p id="a-p3"></p></div>
+  <div class="ab rv txt abs"><h2 class="abh" id="a-h4"></h2><p id="a-p4"></p></div>
+  <div class="ab rv txt abs"><h2 class="abh" id="a-hAI"></h2><p class="abl" id="a-lead"></p><div class="ai" id="a-ai"></div></div>
+  <div class="ab rv abs abstory"><h2 class="abh" id="a-hS"></h2><p class="abl" id="a-pS"></p><div id="a-story"></div></div>
   <div class="ab rv" style="text-align:center"><button class="cta" id="a-next" data-go="inside"></button></div>
 </section>
 <section class="page" id="p-game"></section>
@@ -81,6 +80,7 @@
 <nav class="bar" id="bar"></nav>
 
 <script src="safe.js"></script>
+<script src="perf.js"></script>
 <script src="qr-text.js"></script>
 <script src="content.js"></script>
 <script src="qrdata.js"></script>
@@ -97,8 +97,15 @@
 <script src="fx.js"></script>
 <script src="sky.js"></script>
 <script src="music.js"></script>
+<script src="video.js"></script>
+<script src="dune/comics-img.js"></script>
+<script src="story.js"></script>
 <script src="album.js"></script>
+<script src="dune/holo.js"></script>
+<script src="linkmenu.js"></script>
 <script src="dune-host.js"></script>
+<script src="arcade.js"></script>
+<script src="inside-holo.js"></script>
 <script src="intro.js"></script>
 <script src="pwa.js"></script>
 </body>

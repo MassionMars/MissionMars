@@ -22,6 +22,7 @@ self.addEventListener("activate",e=>{
 });
 
 self.addEventListener("fetch",e=>{
+  if(e.request.headers.has("range")||/\.mp4(\?|$)/.test(e.request.url))return;
   const req=e.request,url=new URL(req.url);
   if(req.method!=="GET"||url.origin!==location.origin)return;
   e.respondWith((async()=>{

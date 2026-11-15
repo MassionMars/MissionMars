@@ -1,13 +1,3 @@
-/* Safe HTML rendering.
- *
- * The site builds its screens from template strings. All text comes from our own data files, but one
- * mistake (an unescaped value, a bad translation) would turn into script injection. This file is the
- * single choke point: every `element.innerHTML = ...` goes through sanitize() first, so scripts, inline
- * event handlers, javascript: links and foreign embeds can never reach the page. The Content-Security-Policy
- * in index.html blocks the same things a second time at the browser level.
- *
- * Also exports MM.esc() for escaping plain text and MM.h() for building elements without strings.
- */
 (function(){
 "use strict";
 const DENY=new Set(["SCRIPT","STYLE","LINK","META","BASE","OBJECT","EMBED","FOREIGNOBJECT","ANIMATE","SET","ANIMATETRANSFORM","ANIMATEMOTION","USE","IFRAME","FRAME","FRAMESET","APPLET"]);
@@ -43,11 +33,11 @@ let tpl=null;
 function sanitize(html){
   if(html==null||html==="")return null;
   tpl=tpl||document.createElement("template");
-  desc.set.call(tpl,String(html)); /* native setter: parse inertly, nothing runs */
+  desc.set.call(tpl,String(html));
   const frag=tpl.content;walk(frag);
   return frag;
 }
-/* innerHTML on every element goes through the sanitizer */
+
 if(desc&&desc.set&&!Element.prototype.__mmSafe){
   Object.defineProperty(Element.prototype,"innerHTML",{
     configurable:true,enumerable:desc.enumerable,
@@ -63,7 +53,7 @@ if(desc&&desc.set&&!Element.prototype.__mmSafe){
 }
 const ESC={"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"};
 const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>ESC[c]);
-/* tiny element builder: h("button",{class:"x",onclick:fn},"text",child) */
+
 function h(tag,attrs,...kids){
   const el=document.createElement(tag);
   for(const k in (attrs||{})){

@@ -97,6 +97,9 @@ def main():
                 text = re.sub(r'const SITE_URL="[^"]*";', 'const SITE_URL="%s";' % (url if url.endswith("/") else url + "/"), text)
         if name == "dune-host.js":
             text = docs_js + "\n" + text
+        if name == "video.js":
+            vids = {k: base64.b64encode((SITE / "assets" / "video" / (k + ".mp4")).read_bytes()).decode() for k in ("intro", "finale")}
+            text = "window.MM_VIDEO_B64=" + json.dumps(vids) + ";\n" + text
         return "<script>\n" + js_safe(text) + "\n</script>"
 
     page = re.sub(r'<script src="([^"]+)"></script>', script, page)
