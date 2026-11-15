@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Mars Dune Alpha — Лаборатория</title>
+<link rel="stylesheet" href="dune-font.css">
+<link rel="stylesheet" href="dune.css">
+<link rel="stylesheet" href="lab.css">
+<link rel="stylesheet" href="dune-skin.css">
+</head>
+<body class="relative w-screen h-screen overflow-hidden select-none">
+
+  <!-- =====================================================================
+       ЭКРАН КОМНАТЫ 3: 🔬 ЛАБОРАТОРИЯ (ГОТОВ К ОБЪЕДИНЕНИЮ С БАЗОЙ)
+  ====================================================================== -->
+  <section id="lab-compartment-screen" class="relative w-full h-full bg-[#1e293b]">
+
+    <!-- Верхняя навигационная панель (в едином крупном стиле нашего проекта) -->
+    <div class="fixed top-3 left-4 right-4 z-50 flex flex-wrap items-center justify-between gap-3 pointer-events-none">
+      <!-- Кнопки слева: «Назад на базу» и плашка «🔬 ЛАБОРАТОРИЯ» -->
+      <div class="flex items-center gap-3 pointer-events-auto">
+        <button
+          onclick="backToBase()"
+          class="flex items-center gap-2.5 px-5 sm:px-6 py-2.5 sm:py-3 rounded-full bg-[#fffdf9] hover:bg-[#ffe8c2] active:scale-95 text-[#231815] font-extrabold text-base sm:text-xl border-[4px] border-[#231815] shadow-[0_5px_0_#231815] transition cursor-pointer"
+        >
+          <span class="text-xl sm:text-2xl leading-none">←</span>
+          <span>Назад на базу</span>
+        </button>
+
+        <div class="flex items-center gap-2.5 px-5 sm:px-6 py-2.5 sm:py-3 rounded-full bg-[#fffdf9] border-[4px] border-[#231815] shadow-[0_5px_0_#231815]">
+          <span class="text-xl sm:text-2xl leading-none">🔬</span>
+          <span class="font-extrabold text-base sm:text-xl text-[#231815] tracking-wide">ЛАБОРАТОРИЯ</span>
+        </div>
+      </div>
+
+      <!-- Переключатель Кризисов 3А / 3Б по центру -->
+      <div class="pointer-events-auto flex items-center gap-2.5 bg-[#fffdf9]/95 p-2 rounded-3xl border-[4px] border-[#231815] shadow-[0_5px_0_#231815]">
+        <button
+          id="tab-crisis-3a"
+          onclick="selectLabCrisis('3A')"
+          class="px-4 sm:px-5 py-2 sm:py-2.5 rounded-2xl font-extrabold text-sm sm:text-lg border-[3px] border-[#231815] bg-[#38bdf8] text-[#231815] shadow-[0_3px_0_#231815] transition cursor-pointer"
+        >
+          ☀️ Кризис 3А: Вспышка DONKI
+        </button>
+        <button
+          id="tab-crisis-3b"
+          onclick="selectLabCrisis('3B')"
+          class="px-4 sm:px-5 py-2 sm:py-2.5 rounded-2xl font-extrabold text-sm sm:text-lg border-[3px] border-transparent hover:border-[#231815] bg-[#f1f5f9] text-[#475569] transition cursor-pointer"
+        >
+          🧊 Кризис 3Б: Марсианский лёд
+        </button>
+      </div>
+
+      <!-- Крупная панель ресурсов справа (❤️ Жизнь, ⚡ Энергия, 🛡️ Щит, 🧬 Наука, ❤️❤️❤️) -->
+      <div class="pointer-events-auto flex flex-wrap items-center gap-2 sm:gap-2.5 bg-[#fffdf9]/95 px-4 sm:px-5 py-2 sm:py-2.5 rounded-3xl border-[4px] border-[#231815] shadow-[0_5px_0_#231815] text-base sm:text-xl font-extrabold">
+        <div class="relative flex items-center gap-1.5 px-3 py-1 rounded-2xl bg-[#dcfce7] border-[3px] border-[#231815] text-[#14532d]" title="Жизнь">
+          <span>❤️</span><span id="hud-life">70</span>
+          <div id="float-life" class="hidden absolute -bottom-8 left-1/2 -translate-x-1/2 font-black text-base sm:text-lg"></div>
+        </div>
+        <div class="relative flex items-center gap-1.5 px-3 py-1 rounded-2xl bg-[#fef9c3] border-[3px] border-[#231815] text-[#713f12]" title="Энергия">
+          <span>⚡</span><span id="hud-energy">80</span>
+          <div id="float-energy" class="hidden absolute -bottom-8 left-1/2 -translate-x-1/2 font-black text-base sm:text-lg"></div>
+        </div>
+        <div class="relative flex items-center gap-1.5 px-3 py-1 rounded-2xl bg-[#dbeafe] border-[3px] border-[#231815] text-[#1e3a8a]" title="Щит">
+          <span>🛡️</span><span id="hud-shield">75</span>
+          <div id="float-shield" class="hidden absolute -bottom-8 left-1/2 -translate-x-1/2 font-black text-base sm:text-lg"></div>
+        </div>
+        <div class="relative flex items-center gap-1.5 px-3 py-1 rounded-2xl bg-[#f3e8ff] border-[3px] border-[#231815] text-[#581c87] hidden" title="Наука">
+          <span>🧬</span><span id="hud-science">10</span>
+          <div id="float-science" class="hidden absolute -bottom-8 left-1/2 -translate-x-1/2 font-black text-base sm:text-lg"></div>
+        </div>
+        <span id="hud-hearts" class="flex items-center gap-1 px-3 py-1 rounded-2xl bg-[#ffe4e6] border-[3px] border-[#231815]">
+          ❤️❤️❤️
+        </span>
+      </div>
+    </div>
+
+    <!-- =================================================================
+         ЗАДНИЙ ПЛАН: ДЕТАЛИЗИРОВАННАЯ 2D-ВИЗУАЛИЗАЦИЯ ЛАБОРАТОРИИ
+         - Сквозь стеклянный купол видна марсианская равнина (небо вверху,
+           а земля Марса ниже уровня горизонта, по которой ходят астронавты
+           и оставляют за собой плавно исчезающие следы!)
+         - Внутри лаборатории: рабочие столы с микроскопами, колбами,
+           квантовым компьютером, лазерным анализатором льда и экранами NASA DONKI.
+    ================================================================== -->
+    <div id="lab-bg-layer" class="w-full h-full">
+      <svg
+        id="lab-scene-svg"
+        viewBox="0 0 1600 1000"
+        class="w-full h-full block"
+        preserveAspectRatio="xMidYMid slice"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <defs>
+          <!-- Небо Марса -->
+          <linearGradient id="labSkyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#df9a84" />
+            <stop offset="65%" stop-color="#efb69e" />
+            <stop offset="100%" stop-color="#f7cfb9" />
+          </linearGradient>
+
+          <!-- Поверхность Марса за окном купола (где ходят астронавты) -->
+          <linearGradient id="labMarsGroundGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#d4754e" />
+            <stop offset="55%" stop-color="#bf5d36" />
+            <stop offset="100%" stop-color="#9e4320" />
+          </linearGradient>
+
+          <!-- Свечение Солнца -->
+          <radialGradient id="labSunGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#fffef5" stop-opacity="1" />
+            <stop offset="40%" stop-color="#fff2cf" stop-opacity="0.9" />
+            <stop offset="75%" stop-color="#f7c49c" stop-opacity="0.35" />
+            <stop offset="100%" stop-color="#e8ad96" stop-opacity="0" />
+          </radialGradient>
+
+          <!-- Стены и пол Лаборатории -->
+          <linearGradient id="labWallGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#8cb8d1" />
+            <stop offset="100%" stop-color="#5d8aa6" />
+          </linearGradient>
+          <linearGradient id="labFloorGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#d6e5ee" />
+            <stop offset="100%" stop-color="#9cb7c7" />
+          </linearGradient>
+        </defs>
+
+        <!-- 1. ВИД НА МАРС СКВОЗЬ ПАНОРАМНЫЙ СТЕКЛЯННЫЙ КУПОЛ ЛАБОРАТОРИИ -->
+        <!-- Небо Марса (только в верхней части 0..210px) -->
+        <rect x="-40" y="-20" width="1680" height="235" fill="url(#labSkyGrad)" />
+
+        <!-- Солнце Марса и предупреждающее свечение солнечной вспышки (для 3А) -->
+        <g class="mars-sun-drift">
+          <g transform="translate(1230, 95)" class="sun-glow">
+            <circle id="solar-flare-aura" cx="0" cy="0" r="115" fill="#ef4444" opacity="0.22" />
+            <circle cx="0" cy="0" r="78" fill="url(#labSunGlow)" />
+            <circle cx="0" cy="0" r="24" fill="#fffef4" />
+          </g>
+        </g>
+
+        <!-- Дальние марсианские хребты на линии горизонта (y ~ 185..215) -->
+        <path
+          d="M -40 205 L 120 175 L 285 198 L 460 168 L 690 195 L 920 172 L 1140 196 L 1360 170 L 1640 195 L 1640 230 L -40 230 Z"
+          fill="#c46845"
+          stroke="#231815"
+          stroke-width="2.8"
+        />
+
+        <!-- НАСТОЯЩАЯ ПОВЕРХНОСТЬ (ЗЕМЛЯ) МАРСА ЗА КУПОЛОМ (y = 205..400) -->
+        <!-- Астронавты опущены с неба строго на эту твёрдую марсианскую равнину! -->
+        <path
+          d="M -40 212 Q 260 196 560 210 T 1180 206 T 1640 204 L 1640 410 L -40 410 Z"
+          fill="url(#labMarsGroundGrad)"
+          stroke="#231815"
+          stroke-width="3"
+        />
+
+        <!-- Детали марсианской равнины снаружи: кратеры, камни и внешняя антенна связи -->
+        <g>
+          <!-- Кратер вдалеке слева -->
+          <ellipse cx="290" cy="255" rx="68" ry="20" fill="#a84b29" stroke="#231815" stroke-width="2.2" />
+          <ellipse cx="293" cy="257" rx="54" ry="14" fill="#8c391b" />
+
+          <!-- Кратер справа с залежами синего марсианского льда -->
+          <ellipse cx="1330" cy="265" rx="75" ry="22" fill="#a84b29" stroke="#231815" stroke-width="2.2" />
+          <ellipse cx="1332" cy="268" rx="60" ry="15" fill="#8c391b" />
+          <polygon points="1315,268 1330,252 1348,266 1335,274" fill="#38bdf8" stroke="#231815" stroke-width="2" />
+
+          <!-- Камни на песке -->
+          <polygon points="620,242 638,232 652,244 635,250" fill="#9c4122" stroke="#231815" stroke-width="2" />
+          <polygon points="1040,248 1060,236 1076,248 1058,255" fill="#9c4122" stroke="#231815" stroke-width="2" />
+
+          <!-- Внешняя параболическая антенна дальнего космоса NASA на грунте -->
+          <g transform="translate(815, 238)">
+            <ellipse cx="0" cy="42" rx="28" ry="9" fill="#5e2210" opacity="0.45" />
+            <polygon points="-14,40 0,8 14,40" fill="#cbd5e1" stroke="#231815" stroke-width="2.5" />
+            <ellipse cx="0" cy="4" rx="28" ry="16" transform="rotate(-18)" fill="#f1f5f9" stroke="#231815" stroke-width="2.5" />
+            <line x1="0" y1="4" x2="12" y2="-10" stroke="#231815" stroke-width="2.5" />
+            <circle cx="14" cy="-12" r="4" fill="#ef4444" class="led-blink-fast" />
+          </g>
+        </g>
+
+        <!-- СЛОЙ DYNAMIC СЛЕДОВ АСТРОНАВТОВ НА ПЕСКЕ МАРСА (плавно исчезают) -->
+        <g id="mars-footprints-layer"></g>
+
+        <!-- СЛОЙ ИДУЩИХ ПО ЗЕМЛЕ МАРСА NPC-АСТРОНАВТОВ В СКАФАНДРАХ -->
+        <g id="mars-surface-astronauts">
+          <!-- Астронавт 1 (идёт по марсианской равнине слева, y = 295) -->
+          <g id="surface-astro-1" transform="translate(380, 295)">
+            <ellipse cx="0" cy="28" rx="14" ry="5.5" fill="#5e2210" opacity="0.48" />
+            <g class="astro-walk-cycle">
+              <!-- Ранец СЖО -->
+              <rect x="-12" y="-12" width="12" height="20" rx="3" fill="#cbd5e1" stroke="#231815" stroke-width="2.2" />
+              <!-- Ноги на земле -->
+              <rect x="-7" y="8" width="6.5" height="19" rx="3" fill="#f1f5f9" stroke="#231815" stroke-width="2.2" />
+              <rect x="1.5" y="8" width="6.5" height="19" rx="3" fill="#f1f5f9" stroke="#231815" stroke-width="2.2" />
+              <!-- Корпус скафандра -->
+              <rect x="-9" y="-14" width="18" height="24" rx="6" fill="#f8fafc" stroke="#231815" stroke-width="2.2" />
+              <!-- Шлем и визор -->
+              <circle cx="0" cy="-23" r="10.5" fill="#f8fafc" stroke="#231815" stroke-width="2.2" />
+              <ellipse id="astro1-visor" cx="4" cy="-23" rx="6" ry="5" fill="#38bdf8" stroke="#231815" stroke-width="1.6" />
+              <!-- Датчик геосканера в руке -->
+              <rect x="7" y="-4" width="10" height="7" rx="2" fill="#fde047" stroke="#231815" stroke-width="1.6" />
+            </g>
+          </g>
+
+          <!-- Астронавт 2 (идёт по марсианской равнине справа, y = 322) -->
+          <g id="surface-astro-2" transform="translate(1120, 322)">
+            <ellipse cx="0" cy="28" rx="14" ry="5.5" fill="#5e2210" opacity="0.48" />
+            <g class="astro-walk-cycle" style="animation-delay: -0.45s;">
+              <rect x="0" y="-12" width="12" height="20" rx="3" fill="#cbd5e1" stroke="#231815" stroke-width="2.2" />
+              <rect x="-7" y="8" width="6.5" height="19" rx="3" fill="#f1f5f9" stroke="#231815" stroke-width="2.2" />
+              <rect x="1.5" y="8" width="6.5" height="19" rx="3" fill="#f1f5f9" stroke="#231815" stroke-width="2.2" />
+              <rect x="-9" y="-14" width="18" height="24" rx="6" fill="#f8fafc" stroke="#231815" stroke-width="2.2" />
+              <circle cx="0" cy="-23" r="10.5" fill="#f8fafc" stroke="#231815" stroke-width="2.2" />
+              <ellipse id="astro2-visor" cx="-4" cy="-23" rx="6" ry="5" fill="#38bdf8" stroke="#231815" stroke-width="1.6" />
+              <!-- Контейнер с образцом льда -->
+              <rect x="-15" y="-5" width="10" height="9" rx="2" fill="#67e8f9" stroke="#231815" stroke-width="1.6" />
+            </g>
+          </g>
+        </g>
+
+        <!-- Прозрачное стекло купола Лаборатории и стальные арочные переплёты -->
+        <rect x="0" y="0" width="1600" height="385" fill="#bae6fd" opacity="0.16" pointer-events="none" />
+        <g fill="none" stroke="#231815" stroke-width="4" pointer-events="none">
+          <path d="M -20 380 Q 800 190 1620 380" stroke="#e2e8f0" stroke-width="14" />
+          <path d="M -20 380 Q 800 190 1620 380" stroke="#231815" stroke-width="4" />
+          <path d="M -20 205 Q 800 25 1620 205" stroke="#e2e8f0" stroke-width="10" />
+          <path d="M -20 205 Q 800 25 1620 205" stroke="#231815" stroke-width="3.5" />
+          <line x1="230" y1="0" x2="95" y2="365" stroke="#cbd5e1" stroke-width="8" />
+          <line x1="230" y1="0" x2="95" y2="365" stroke="#231815" stroke-width="3" />
+          <line x1="590" y1="0" x2="520" y2="315" stroke="#cbd5e1" stroke-width="8" />
+          <line x1="590" y1="0" x2="520" y2="315" stroke="#231815" stroke-width="3" />
+          <line x1="1010" y1="0" x2="1080" y2="315" stroke="#cbd5e1" stroke-width="8" />
+          <line x1="1010" y1="0" x2="1080" y2="315" stroke="#231815" stroke-width="3" />
+          <line x1="1370" y1="0" x2="1505" y2="365" stroke="#cbd5e1" stroke-width="8" />
+          <line x1="1370" y1="0" x2="1505" y2="365" stroke="#231815" stroke-width="3" />
+        </g>
+
+        <!-- 2. ВНУТРЕННИЕ СТЕНЫ И ПОЛ ЛАБОРАТОРИИ MARS DUNE ALPHA -->
+        <rect x="0" y="370" width="1600" height="410" fill="url(#labWallGrad)" stroke="#231815" stroke-width="4" />
+        <polygon points="0,780 1600,780 1600,1000 0,1000" fill="url(#labFloorGrad)" stroke="#231815" stroke-width="4" />
+        <!-- Перспективные линии плитки пола -->
+        <line x1="250" y1="780" x2="80" y2="1000" stroke="#7c9eb2" stroke-width="3" />
+        <line x1="600" y1="780" x2="510" y2="1000" stroke="#7c9eb2" stroke-width="3" />
+        <line x1="1000" y1="780" x2="1090" y2="1000" stroke="#7c9eb2" stroke-width="3" />
+        <line x1="1350" y1="780" x2="1520" y2="1000" stroke="#7c9eb2" stroke-width="3" />
+
+        <!-- Верхняя приборная балка Лаборатории -->
+        <rect x="0" y="355" width="1600" height="22" fill="#94a3b8" stroke="#231815" stroke-width="3.5" />
+
+        <!-- 3. ЛЕВАЯ ЗОНА ЛАБОРАТОРИИ: СТОЛ ХИМИЧЕСКОГО АНАЛИЗА, КОЛБЫ И КАМЕРА ЛЬДА -->
+        <g transform="translate(50, 415)">
+          <!-- Настенный монитор спектрального анализа -->
+          <rect x="15" y="0" width="310" height="135" rx="12" fill="#1e293b" stroke="#231815" stroke-width="4" />
+          <rect x="29" y="14" width="282" height="107" rx="8" fill="#0f172a" stroke="#231815" stroke-width="2.5" />
+          <!-- Синусоиды на мониторе -->
+          <path d="M 42 68 Q 75 28 108 68 T 174 68 T 240 68 T 298 68" fill="none" stroke="#4ade80" stroke-width="3.5" />
+          <path d="M 42 68 Q 75 102 108 68 T 174 68 T 240 68 T 298 68" fill="none" stroke="#facc15" stroke-width="3" stroke-dasharray="6 4" />
+
+          <!-- Лабораторный стол с разноцветными колбами и лазерным боксом для льда -->
+          <rect x="0" y="210" width="350" height="24" rx="6" fill="#f8fafc" stroke="#231815" stroke-width="3.5" />
+          <rect x="18" y="234" width="314" height="125" rx="6" fill="#cbd5e1" stroke="#231815" stroke-width="3.5" />
+          <rect x="38" y="252" width="130" height="90" rx="6" fill="#94a3b8" stroke="#231815" stroke-width="2.5" />
+          <rect x="184" y="252" width="130" height="90" rx="6" fill="#94a3b8" stroke="#231815" stroke-width="2.5" />
+
+          <!-- Разноцветные химические колбы (как на изометрической базе) -->
+          <path d="M 35 210 L 52 162 L 62 162 L 79 210 Z" fill="#f472b6" stroke="#231815" stroke-width="3" />
+          <rect x="49" y="152" width="16" height="10" rx="2" fill="#e2e8f0" stroke="#231815" stroke-width="2.5" />
+
+          <path d="M 92 210 L 108 156 L 118 156 L 134 210 Z" fill="#c084fc" stroke="#231815" stroke-width="3" />
+          <rect x="105" y="146" width="16" height="10" rx="2" fill="#e2e8f0" stroke="#231815" stroke-width="2.5" />
+
+          <path d="M 148 210 L 162 168 L 172 168 L 186 210 Z" fill="#4ade80" stroke="#231815" stroke-width="3" />
+
+          <!-- Герметичная крио-камера с кристаллом марсианского льда и лазером -->
+          <g transform="translate(210, 128)">
+            <rect x="0" y="0" width="122" height="82" rx="10" fill="#0f172a" stroke="#231815" stroke-width="3.5" />
+            <rect x="8" y="8" width="106" height="66" rx="6" fill="#1e3a8a" opacity="0.55" />
+            <!-- Кристалл синего марсианского льда внутри -->
+            <polygon points="38,68 52,32 72,26 86,48 78,68" fill="#38bdf8" stroke="#231815" stroke-width="2.5" />
+            <polygon points="52,32 72,26 66,68 48,68" fill="#bae6fd" opacity="0.7" />
+            <!-- Лазерный излучатель сверху -->
+            <rect x="52" y="0" width="20" height="14" fill="#ef4444" stroke="#231815" stroke-width="2" />
+            <line id="ice-laser-beam" x1="62" y1="14" x2="62" y2="42" stroke="#f43f5e" stroke-width="5" class="laser-beam-anim hidden" />
+          </g>
+        </g>
+
+        <!-- 4. ЦЕНТРАЛЬНАЯ ЗОНА: ЭКРАН NASA DONKI И ЭМБЛЕМА МИКРОСКОПА НА БЕЛОМ ФОНЕ -->
+        <g transform="translate(445, 410)">
+          <!-- Главный широкоформатный экран NASA DONKI & ROVER TELEMETRY -->
+          <rect x="0" y="0" width="465" height="175" rx="14" fill="#1e293b" stroke="#231815" stroke-width="4" />
+          <rect x="16" y="16" width="285" height="143" rx="8" fill="#0f172a" stroke="#231815" stroke-width="2.5" />
+
+          <!-- Индикатор солнечной вспышки и магнитного щита базы -->
+          <circle cx="72" cy="88" r="32" fill="#f59e0b" stroke="#fef08a" stroke-width="3" class="sun-glow" />
+          <!-- Дуга магнитного щита -->
+          <path d="M 145 42 C 175 65, 175 110, 145 134" fill="none" stroke="#38bdf8" stroke-width="5" stroke-linecap="round" class="led-blink" />
+          <!-- Силуэт базы под защитой щита -->
+          <rect x="195" y="68" width="75" height="42" rx="8" fill="#b8563c" stroke="#ffffff" stroke-width="2" />
+          <text x="30" y="36" fill="#fde047" font-size="13" font-weight="800" font-family="MMSans">NASA DONKI: SOLAR MONITOR</text>
+
+          <!-- Правая секция экрана: радар кратера для ровера -->
+          <rect x="315" y="16" width="134" height="143" rx="8" fill="#0f172a" stroke="#231815" stroke-width="2.5" />
+          <circle cx="382" cy="88" r="48" fill="#022c22" stroke="#22c55e" stroke-width="2.5" />
+          <line x1="334" y1="88" x2="430" y2="88" stroke="#22c55e" stroke-width="1.5" opacity="0.5" />
+          <line x1="382" y1="40" x2="382" y2="136" stroke="#22c55e" stroke-width="1.5" opacity="0.5" />
+          <circle cx="365" cy="72" r="5" fill="#ef4444" />
+          <circle cx="402" cy="68" r="6" fill="#38bdf8" class="led-blink-fast" />
+        </g>
+
+        <!-- Фирменная белая табличка с МИКРОСКОПОМ (с белым фоном, как на фасаде базы) -->
+        <g transform="translate(945, 425)">
+          <rect x="0" y="0" width="108" height="118" rx="16" fill="#f5ede6" stroke="#231815" stroke-width="4" />
+          <g transform="translate(54, 60)">
+            <path
+              d="M -26 32 L 26 32 M 0 32 L 0 18 M 6 -30 L -12 -6 L 6 6 M 0 -20 C 22 -14, 24 16, 0 18"
+              fill="none"
+              stroke="#231815"
+              stroke-width="7"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </g>
+        </g>
+
+        <!-- 5. ПРАВАЯ ЗОНА: ГЛАВНЫЙ СТОЛ С МИКРОСКОПАМИ, ТЕРМИНАЛАМИ И NPC-УЧЁНЫМ -->
+        <g transform="translate(1075, 445)">
+          <!-- Настенные экраны телеметрии ровера -->
+          <rect x="35" y="-25" width="185" height="105" rx="10" fill="#1e293b" stroke="#231815" stroke-width="3.5" />
+          <rect x="47" y="-13" width="161" height="81" rx="6" fill="#38bdf8" opacity="0.85" />
+          <path d="M 60 45 L 95 15 L 135 35 L 185 5" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" />
+
+          <rect x="245" y="-25" width="185" height="105" rx="10" fill="#1e293b" stroke="#231815" stroke-width="3.5" />
+          <rect x="257" y="-13" width="161" height="81" rx="6" fill="#0f172a" />
+          <rect x="272" y="5" width="90" height="10" rx="4" fill="#4ade80" />
+          <rect x="272" y="25" width="120" height="10" rx="4" fill="#38bdf8" />
+          <rect x="272" y="45" width="65" height="10" rx="4" fill="#facc15" />
+
+          <!-- Большой белый лабораторный стол -->
+          <rect x="0" y="180" width="465" height="24" rx="6" fill="#ffffff" stroke="#231815" stroke-width="3.5" />
+          <rect x="16" y="204" width="433" height="130" rx="6" fill="#cbd5e1" stroke="#231815" stroke-width="3.5" />
+
+          <!-- Два лабораторных микроскопа на столе -->
+          <g transform="translate(75, 130)">
+            <rect x="-22" y="42" width="44" height="8" rx="3" fill="#334155" stroke="#231815" stroke-width="2.5" />
+            <path d="M 0 42 L 0 12 C 18 10, 20 -12, 2 -18 L -10 2" fill="none" stroke="#231815" stroke-width="6" stroke-linecap="round" />
+            <rect x="-14" y="-24" width="12" height="22" rx="3" transform="rotate(20)" fill="#f8fafc" stroke="#231815" stroke-width="2.5" />
+          </g>
+
+          <g transform="translate(175, 130)">
+            <rect x="-22" y="42" width="44" height="8" rx="3" fill="#334155" stroke="#231815" stroke-width="2.5" />
+            <path d="M 0 42 L 0 12 C 18 10, 20 -12, 2 -18 L -10 2" fill="none" stroke="#231815" stroke-width="6" stroke-linecap="round" />
+            <rect x="-14" y="-24" width="12" height="22" rx="3" transform="rotate(20)" fill="#f8fafc" stroke="#231815" stroke-width="2.5" />
+          </g>
+
+          <!-- Компьютерный терминал управления ровером на столе -->
+          <rect x="285" y="112" width="115" height="68" rx="8" fill="#1e293b" stroke="#231815" stroke-width="3" />
+          <rect x="293" y="120" width="99" height="52" rx="4" fill="#38bdf8" class="led-blink" />
+        </g>
+
+        <!-- NPC Учёный в лабораторном костюме (спиной у компьютерного терминала) -->
+        <g class="npc-scientist" transform="translate(1385, 675)">
+          <ellipse cx="0" cy="105" rx="34" ry="12" fill="#231815" opacity="0.25" />
+          <rect x="-18" y="38" width="14" height="58" rx="5" fill="#475569" stroke="#231815" stroke-width="3" />
+          <rect x="4" y="38" width="14" height="58" rx="5" fill="#475569" stroke="#231815" stroke-width="3" />
+          <rect x="-26" y="-26" width="52" height="68" rx="12" fill="#e2e8f0" stroke="#231815" stroke-width="3" />
+          <!-- Спинка лабораторного кресла -->
+          <rect x="-22" y="-4" width="44" height="48" rx="8" fill="#334155" stroke="#231815" stroke-width="3" />
+          <!-- Голова со спины (лица не видно) -->
+          <circle cx="0" cy="-48" r="21" fill="#7c4a2d" stroke="#231815" stroke-width="3" />
+        </g>
+      </svg>
+    </div>
+
+    <!-- =================================================================
+         ИНТЕРАКТИВНЫЙ ИГРОВОЙ СЛОЙ КОМНАТЫ 3: 🔬 ЛАБОРАТОРИЯ
+         - Карточка выбора решения по Кризису 3А или 3Б
+         - Модальное окно с GIF-анимацией обучения перед стартом (Игры №5 и №6)
+         - Поле активной Мини-игры (№5 «Поймай волну» и №6 «Маршрут ровера»)
+         - Экран результата (Победа / Повторная попытка)
+    ================================================================== -->
+    <div id="minigame-mount-point" class="fixed inset-0 z-40 flex items-center justify-center p-4 pt-20 pointer-events-none">
+
+      <!-- 1. ЭКРАН ДИЛЕММЫ КРИЗИСА (ВЫБОР ВАРИАНТА 1 ИЛИ 2) -->
+      <div
+        id="lab-dilemma-card"
+        class="pointer-events-auto w-full max-w-4xl bg-[#fffdf9]/95 border-[4px] border-[#231815] rounded-3xl p-5 sm:p-7 shadow-[0_10px_0_#231815,0_20px_40px_rgba(0,0,0,0.45)] transition-all"
+      >
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b-[3px] border-[#231815]/15">
+          <div>
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#fee2e2] border-2 border-[#231815] text-[#991b1b] font-extrabold text-xs uppercase mb-1.5">
+              <span>🚨 Тревога в отсеке</span>
+              <span id="crisis-code-badge">КРИЗИС 3А</span>
+            </div>
+            <h2 id="crisis-title" class="text-xl sm:text-2xl font-extrabold text-[#231815]">
+              «Предупреждение NASA DONKI о вспышке»
+            </h2>
+            <p id="crisis-subtitle" class="text-sm sm:text-base font-semibold text-[#57534e] mt-0.5">
+              Нужно срочно перенастроить магнитный щит и антенну дальней связи!
+            </p>
+          </div>
+          <div class="shrink-0 flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-[#dbeafe] border-2 border-[#231815] text-xs sm:text-sm font-extrabold text-[#1e3a8a]">
+            <span>🔬 Отвечает за: 🛡️ Щит</span>
+          </div>
+        </div>
+
+        <!-- Две карточки бинарного выбора -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mt-5">
+          <!-- ВАРИАНТ 1 -->
+          <div
+            onclick="openTutorialForOption(1)"
+            class="group cursor-pointer flex flex-col justify-between rounded-2xl bg-gradient-to-b from-[#f0f9ff] to-[#e0f2fe] border-[3px] border-[#231815] p-5 shadow-[0_6px_0_#231815] hover:-translate-y-1 hover:shadow-[0_9px_0_#231815] active:translate-y-0.5 transition-all"
+          >
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-3">
+                <span class="px-3 py-1 rounded-lg bg-[#0284c7] text-white font-extrabold text-xs uppercase border-2 border-[#231815]">
+                  Вариант 1
+                </span>
+                <span id="opt1-minigame-tag" class="px-2.5 py-1 rounded-lg bg-white border-2 border-[#231815] font-extrabold text-xs text-[#0369a1]">
+                  〰️ Игра №5: Поймай волну (10с)
+                </span>
+              </div>
+              <h3 id="opt1-title" class="text-base sm:text-lg font-extrabold text-[#231815] leading-snug">
+                Направить всю мощность компьютера на расчёт защиты
+              </h3>
+            </div>
+
+            <div class="mt-5 pt-3 border-t-2 border-[#231815]/15">
+              <div class="text-xs font-bold uppercase text-[#475569] mb-1.5">Цена и Награда (при победе):</div>
+              <div id="opt1-rewards" class="flex flex-wrap items-center gap-2">
+                <!-- Заполняется динамически -->
+              </div>
+              <button class="mt-4 w-full py-2.5 rounded-xl bg-[#38bdf8] group-hover:bg-[#0ea5e9] text-[#231815] font-extrabold text-sm border-2 border-[#231815] shadow-[0_3px_0_#231815] transition">
+                Выбрать Вариант 1 →
+              </button>
+            </div>
+          </div>
+
+          <!-- ВАРИАНТ 2 -->
+          <div
+            onclick="openTutorialForOption(2)"
+            class="group cursor-pointer flex flex-col justify-between rounded-2xl bg-gradient-to-b from-[#faf5ff] to-[#f3e8ff] border-[3px] border-[#231815] p-5 shadow-[0_6px_0_#231815] hover:-translate-y-1 hover:shadow-[0_9px_0_#231815] active:translate-y-0.5 transition-all"
+          >
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-3">
+                <span class="px-3 py-1 rounded-lg bg-[#7e22ce] text-white font-extrabold text-xs uppercase border-2 border-[#231815]">
+                  Вариант 2
+                </span>
+                <span id="opt2-minigame-tag" class="px-2.5 py-1 rounded-lg bg-white border-2 border-[#231815] font-extrabold text-xs text-[#6b21a8]">
+                  🚜 Игра №6: Маршрут ровера (10с)
+                </span>
+              </div>
+              <h3 id="opt2-title" class="text-base sm:text-lg font-extrabold text-[#231815] leading-snug">
+                Отправить ровер на разведку кратера, пока есть связь
+              </h3>
+            </div>
+
+            <div class="mt-5 pt-3 border-t-2 border-[#231815]/15">
+              <div class="text-xs font-bold uppercase text-[#475569] mb-1.5">Цена и Награда (при победе):</div>
+              <div id="opt2-rewards" class="flex flex-wrap items-center gap-2">
+                <!-- Заполняется динамически -->
+              </div>
+              <button class="mt-4 w-full py-2.5 rounded-xl bg-[#c084fc] group-hover:bg-[#a855f7] text-[#231815] font-extrabold text-sm border-2 border-[#231815] shadow-[0_3px_0_#231815] transition">
+                Выбрать Вариант 2 →
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. МОДАЛЬНОЕ ОКНО С АНИМИРОВАННОЙ GIF-ИНСТРУКЦИЕЙ ПЕРЕД МИНИ-ИГРОЙ (№5 или №6) -->
+      <div
+        id="lab-tutorial-modal"
+        class="hidden pointer-events-auto w-full max-w-lg bg-[#fffdf9] border-[4px] border-[#231815] rounded-3xl p-6 shadow-[0_10px_0_#231815,0_20px_50px_rgba(0,0,0,0.5)] text-center"
+      >
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#fef9c3] border-2 border-[#231815] text-xs font-extrabold text-[#854d0e] uppercase mb-2">
+          <span>🎮 Инструкция</span>
+          <span>• 10 секунд</span>
+        </div>
+        <h3 id="tut-title" class="text-xl sm:text-2xl font-extrabold text-[#231815]">
+          Мини-игра №5: «Поймай волну»
+        </h3>
+        <p id="tut-desc" class="text-sm font-semibold text-[#57534e] mt-1">
+          Двигай ползунок частоты, чтобы совместить жёлтую и зелёную синусоиды в одну линию!
+        </p>
+
+        <!-- Анимированная GIF-сценка (переключается под Игру №5 или №6) -->
+        <div class="relative w-full h-44 my-4 rounded-2xl bg-[#0f172a] border-[3px] border-[#231815] overflow-hidden flex items-center justify-center">
+          <!-- GIF-демо для Игры №5 (Совмещение двух синусоид ползунком) -->
+          <div id="tut-gif-game5" class="relative w-full h-full flex flex-col items-center justify-between p-3">
+            <div class="text-xs font-extrabold text-[#4ade80] bg-black/50 px-3 py-1 rounded-lg">
+              Совмести ЖЁЛТУЮ волну с ЗЕЛЁНОЙ!
+            </div>
+            <svg viewBox="0 0 320 90" class="w-full h-24">
+              <!-- Эталонная зелёная синусоида -->
+              <path
+                d="M 10 45 Q 50 10 90 45 T 170 45 T 250 45 T 310 45"
+                fill="none"
+                stroke="#4ade80"
+                stroke-width="4.5"
+                stroke-linecap="round"
+              />
+              <!-- Настраиваемая жёлтая синусоида -->
+              <path
+                class="gif-wave-yellow"
+                d="M 10 45 Q 50 10 90 45 T 170 45 T 250 45 T 310 45"
+                fill="none"
+                stroke="#facc15"
+                stroke-width="4"
+                stroke-dasharray="8 5"
+                stroke-linecap="round"
+              />
+            </svg>
+            <!-- Ползунок внизу -->
+            <div class="relative w-4/5 h-5 rounded-full bg-[#334155] border-2 border-[#231815]">
+              <div class="gif-slider-knob absolute -top-1.5 w-7 h-7 rounded-full bg-[#facc15] border-2 border-[#231815] shadow"></div>
+            </div>
+          </div>
+
+          <!-- GIF-демо для Игры №6 (Проведение линии маршрута ровера к синему льду) -->
+          <div id="tut-gif-game6" class="hidden relative w-full h-full">
+            <div class="absolute top-2 left-3 right-3 flex items-center justify-between text-xs font-extrabold text-white bg-black/50 px-3 py-1 rounded-lg z-10">
+              <span>Проведи линию от 🚜 до 🧊 Льда!</span>
+              <span class="text-[#f87171]">Объезжай 🔴 валуны!</span>
+            </div>
+            <svg viewBox="0 0 320 150" class="w-full h-full">
+              <!-- Красные камни-препятствия -->
+              <circle cx="115" cy="105" r="18" fill="#ef4444" stroke="#231815" stroke-width="3" />
+              <circle cx="175" cy="52" r="18" fill="#ef4444" stroke="#231815" stroke-width="3" />
+              <!-- Пунктирный маршрут в обход камней -->
+              <path
+                class="gif-route-line"
+                d="M 42 112 C 75 45, 130 45, 145 85 C 160 125, 210 115, 255 55"
+                fill="none"
+                stroke="#38bdf8"
+                stroke-width="5"
+                stroke-linecap="round"
+              />
+              <!-- Синий кристалл льда (финиш) -->
+              <polygon points="255,32 276,48 268,74 242,74 235,48" fill="#38bdf8" stroke="#231815" stroke-width="3" />
+            </svg>
+            <div class="gif-rover-icon absolute top-0 left-0 text-2xl pointer-events-none">🚜</div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3 mt-4">
+          <button
+            onclick="resetToCrisisDilemma()"
+            class="w-1/3 py-3 rounded-2xl bg-[#e2e8f0] hover:bg-[#cbd5e1] text-[#231815] font-extrabold text-sm border-[3px] border-[#231815] shadow-[0_4px_0_#231815] transition cursor-pointer"
+          >
+            ← Назад
+          </button>
+          <button
+            onclick="startSelectedMiniGame()"
+            class="w-2/3 py-3 rounded-2xl bg-[#4ade80] hover:bg-[#22c55e] active:translate-y-0.5 text-[#231815] font-extrabold text-base sm:text-lg border-[3px] border-[#231815] shadow-[0_5px_0_#231815] transition cursor-pointer"
+          >
+            🚀 СТАРТ! (10 СЕК)
+          </button>
+        </div>
+      </div>
+
+      <!-- 3. АКТИВНОЕ ПОЛЕ МИНИ-ИГРЫ (ПОВЕРХ ИНТЕРЬЕРА ЛАБОРАТОРИИ) -->
+      <div
+        id="lab-active-game-box"
+        class="hidden pointer-events-auto relative w-full max-w-4xl h-[75vh] max-h-[590px] bg-[#0f172a]/70 backdrop-blur-[2px] border-[4px] border-[#231815] rounded-3xl shadow-[0_10px_0_#231815] overflow-hidden flex flex-col justify-between"
+      >
+        <!-- Верхний игровой бар: Таймер 10 сек + Прогресс цели -->
+        <div class="relative z-20 flex items-center justify-between gap-4 bg-[#fffdf9] px-5 py-3 border-b-[3px] border-[#231815]">
+          <div class="flex items-center gap-3">
+            <span id="active-game-badge" class="px-3 py-1 rounded-xl bg-[#38bdf8] border-2 border-[#231815] font-extrabold text-xs sm:text-sm text-[#231815]">
+              〰️ Поймай волну
+            </span>
+            <div class="text-sm sm:text-base font-extrabold text-[#231815]">
+              Выполнено: <span id="game-score-current" class="text-[#16a34a] text-lg">0</span> / <span id="game-score-target">100%</span>
+            </div>
+          </div>
+
+          <div class="hidden sm:flex items-center gap-2 flex-1 max-w-xs">
+            <div class="w-full h-4 rounded-full bg-[#e2e8f0] border-2 border-[#231815] overflow-hidden">
+              <div id="game-goal-bar" class="h-full bg-[#4ade80] transition-all duration-100" style="width: 0%;"></div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2 px-3.5 py-1 rounded-xl bg-[#fee2e2] border-2 border-[#231815] font-extrabold text-base sm:text-lg text-[#b91c1c]">
+            <span>⏱️</span>
+            <span id="game-timer-display">10.0с</span>
+          </div>
+        </div>
+
+        <!-- Полоска обратного отсчёта времени -->
+        <div class="w-full h-2 bg-[#1e293b]">
+          <div id="game-time-bar" class="h-full bg-[#f59e0b] transition-all duration-75" style="width: 100%;"></div>
+        </div>
+
+        <!-- ===============================================================
+             АРЕНА ИГРЫ №5: «ПОЙМАЙ ВОЛНУ» (СОВМЕЩЕНИЕ СИНУСОИД ПОЛЗУНКОМ)
+        ================================================================ -->
+        <div id="arena-game-5" class="relative flex-1 w-full h-full p-4 sm:p-6 flex flex-col justify-between items-center">
+          <div class="w-full max-w-2xl bg-[#fffdf9] border-[3px] border-[#231815] rounded-2xl px-4 py-2.5 shadow-[0_4px_0_#231815] flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <span class="text-lg">📡</span>
+              <span id="wave-task-title" class="text-sm sm:text-base font-extrabold text-[#231815]">
+                Осциллограф щита: совмести жёлтую синусоиду с зелёной!
+              </span>
+            </div>
+            <span id="wave-sync-badge" class="px-3 py-1 rounded-xl bg-[#fef08a] border-2 border-[#231815] font-extrabold text-xs sm:text-sm text-[#231815]">
+              Совпадение: 0%
+            </span>
+          </div>
+
+          <!-- Экран осциллографа с двумя синусоидами -->
+          <div class="relative w-full max-w-2xl flex-1 my-3 rounded-3xl bg-[#091326] border-[4px] border-[#231815] shadow-[inset_0_0_28px_rgba(56,189,248,0.25)] overflow-hidden">
+            <canvas id="wave-canvas" class="w-full h-full block"></canvas>
+          </div>
+
+          <!-- Ползунок настройки частоты -->
+          <div class="w-full max-w-2xl bg-[#fffdf9] border-[3px] border-[#231815] rounded-2xl px-5 py-3 shadow-[0_5px_0_#231815] flex flex-col gap-2">
+            <div class="flex items-center justify-between text-xs sm:text-sm font-extrabold text-[#231815]">
+              <span>🎛️ ПОЛЗУНОК ЧАСТОТЫ (двигай влево-вправо или стрелками ⬅️ ➡️):</span>
+              <span id="wave-hold-hint" class="text-[#0284c7]">Удерживай резонанс 1.5 сек!</span>
+            </div>
+            <input
+              id="wave-freq-slider"
+              type="range"
+              min="10"
+              max="100"
+              value="22"
+              class="w-full h-5 accent-[#facc15] cursor-ew-resize rounded-lg"
+            />
+          </div>
+        </div>
+
+        <!-- ===============================================================
+             АРЕНА ИГРЫ №6: «МАРШРУТ РОВЕРА» (НАРИСОВАТЬ ПУТЬ ДО ЛЬДА)
+        ================================================================ -->
+        <div id="arena-game-6" class="hidden relative flex-1 w-full h-full p-3 sm:p-5 flex flex-col justify-between items-center">
+          <div class="w-full max-w-2xl bg-[#fffdf9] border-[3px] border-[#231815] rounded-2xl px-4 py-2 shadow-[0_4px_0_#231815] flex flex-wrap items-center justify-between gap-2">
+            <span class="text-xs sm:text-sm font-extrabold text-[#231815]">
+              🚜 Зажми мышку (или палец) на СТАРТЕ и проведи путь до 🧊 СИНЕГО ЛЬДА, объезжая 🔴 валуны!
+            </span>
+            <button
+              type="button"
+              onclick="resetRoverRouteAttempt()"
+              class="px-3 py-1 rounded-xl bg-[#fee2e2] hover:bg-[#fecaca] border-2 border-[#231815] font-extrabold text-xs text-[#991b1b] cursor-pointer"
+            >
+              🔄 Сбросить линию
+            </button>
+          </div>
+
+          <!-- Интерактивная карта кратера (Canvas) -->
+          <div id="rover-map-wrapper" class="relative w-full max-w-2xl flex-1 my-2 rounded-3xl bg-[#b85635] border-[4px] border-[#231815] shadow-[0_6px_0_#231815] overflow-hidden">
+            <canvas id="rover-route-canvas" class="w-full h-full block cursor-crosshair touch-none"></canvas>
+          </div>
+
+          <div id="rover-status-footer" class="px-4 py-1 rounded-full bg-black/65 text-white text-xs sm:text-sm font-bold">
+            Начни вести линию от зелёного круга «СТАРТ РОВЕРА» слева!
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. МОДАЛЬНОЕ ОКНО ИТОГА МИНИ-ИГРЫ (ПОБЕДА / ПРОИГРЫШ) -->
+      <div
+        id="lab-result-modal"
+        class="hidden pointer-events-auto w-full max-w-md bg-[#fffdf9] border-[4px] border-[#231815] rounded-3xl p-6 shadow-[0_10px_0_#231815,0_20px_50px_rgba(0,0,0,0.5)] text-center"
+      >
+        <div id="res-icon" class="text-5xl mb-2">🎉</div>
+        <h3 id="res-title" class="text-2xl font-extrabold text-[#231815]">
+          Кризис устранён!
+        </h3>
+        <p id="res-desc" class="text-sm font-bold text-[#57534e] mt-1">
+          Лаборатория блестяще выполнила научную задачу!
+        </p>
+
+        <div id="res-badges" class="flex flex-wrap items-center justify-center gap-2 my-4">
+          <!-- Динамические бейджи ресурсов -->
+        </div>
+
+        <div class="flex items-center justify-center gap-3 mt-4">
+          <button
+            onclick="afterResult()"
+            class="px-5 py-3 rounded-2xl bg-[#fde047] hover:bg-[#facc15] text-[#231815] font-extrabold text-sm border-[3px] border-[#231815] shadow-[0_4px_0_#231815] transition cursor-pointer"
+          >
+            🔄 Дальше
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =====================================================================
+       СКРИПТ: ДВИЖЕНИЕ АСТРОНАВТОВ С ИСЧЕЗАЮЩИМИ СЛЕДАМИ И МИНИ-ИГРЫ №5, №6
+  ====================================================================== -->
+  <script src="dune-dict.js"></script>
+<script src="dune-i18n.js"></script>
+<script src="dune-bridge.js"></script>
+<script src="dune-crisis.js"></script>
+<script src="mini2.js"></script>
+<script src="lab.js"></script>
+<script src="dune-day.js"></script>
+</body>
+</html>

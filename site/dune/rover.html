@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Mars Dune Alpha - Rover</title>
+<link rel="stylesheet" href="dune-font.css"><link rel="stylesheet" href="rover.css"></head><body>
+<div id="wrap" class="idle"><div id="app"><canvas id="c"></canvas>
+<div class="hud" id="top"><div class="pill">⏱ <b id="tm">0</b>s</div><div class="pill">📏 <b id="mt">0</b> / 348 m · 🧪 <b id="sm">0</b></div><div class="pill" id="sp"></div></div>
+<div id="objp" style="position:absolute;left:12px;top:56px;z-index:2;pointer-events:none;font-size:clamp(9px,1.4vw,13px);background:rgba(18,8,15,.65);border:1px solid rgba(255,220,180,.18);border-radius:10px;padding:6px 9px;line-height:1.5"></div><div id="fact"></div><div id="card"></div>
+<div class="hud" id="bot"><div class="g"><small id="l1"></small><div class="bar"><i id="g1"></i></div></div><div class="g"><small id="l2"></small><div class="bar"><i id="g2"></i></div></div><div class="g"><small id="l3"></small><div class="bar"><i id="g3" style="background:#4aa8ff"></i></div></div></div>
+<div id="ov"><div id="ovc"></div></div></div>
+<div id="pad"><button class="pb" data-t="l">◀</button><div style="display:flex;gap:8px;align-items:flex-end"><button class="pb auto" data-t="auto" id="ba"></button><button class="pb" data-t="r">▶</button></div></div></div>
+<script src="dune-bridge.js"></script>
+<script src="rover.js"></script>
+</body></html>

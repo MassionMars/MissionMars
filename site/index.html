@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self' blob:; connect-src 'self'; frame-src 'self' https://www.youtube-nocookie.com https://www.youtube.com; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; worker-src 'self'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MISSION: MARS</title>
+<meta name="description" content="MISSION: MARS. A hybrid physical + digital Mars-base survival game concept. Build. Survive. Explore.">
+<meta name="theme-color" content="#12080f">
+<meta name="google" content="notranslate">
+<meta http-equiv="Content-Language" content="en">
+<meta name="color-scheme" content="dark">
+<meta name="format-detection" content="telephone=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%23c4562e'/%3E%3Ccircle cx='11' cy='12' r='4' fill='%23e8743c'/%3E%3Ccircle cx='21' cy='20' r='3' fill='%23a8482a'/%3E%3C/svg%3E">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+<link rel="stylesheet" href="assets/fonts/fonts.css">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="responsive.css">
+<link rel="stylesheet" href="vault.css">
+<link rel="stylesheet" href="extras.css">
+<link rel="stylesheet" href="dune-host.css">
+<link rel="stylesheet" href="skin.css">
+<link rel="stylesheet" href="album.css">
+</head>
+<body class="intro-on" data-page="home">
+<div id="intro"><canvas id="gl"></canvas><i id="iload"></i><div id="ititle">MISSION: MARS</div><div id="isub"></div><div id="flash"></div><button id="skip"></button></div>
+<div id="skybg"></div><div id="ground" aria-hidden="true"></div>
+<canvas id="stars"></canvas>
+<div id="prog"></div>
+<a class="skip" id="skip-link" href="#main">Skip to content</a>
+<div class="top"><div class="logo">MISSION: MARS</div><div class="top-r"><button id="mus" class="mus" type="button" aria-pressed="true" aria-label="Music">🎵</button><button id="snd" class="snd" type="button" aria-pressed="true" aria-label="Sound">🔊</button><div class="langs" id="langs" role="group" aria-label="Language"></div></div></div>
+<div id="glive" class="sr" role="status" aria-live="polite"></div>
+
+<main id="main" tabindex="-1">
+<section class="page on" id="p-home">
+  <div class="hero" id="hero">
+    <div class="pl"><div class="plin">
+      <i class="rg"></i><i class="rg" style="animation-delay:-3s"></i>
+      <div class="orbit"><span>🛰️</span></div>
+      <div class="atm"></div>
+      <div class="planet"><canvas id="mtex" width="1024" height="512"></canvas></div>
+    </div></div>
+    <h1 id="h1"></h1>
+    <p class="sub rise" style="--d:1.2s" data-t="sub"></p>
+    <div class="tokens" id="tokens"></div>
+    <div class="cta-row rise" style="--d:3.9s"><div class="ctaw"><button class="cta play" data-go="game" data-t="play"></button></div><button class="cta alt" data-go="about" data-t="cta"></button></div>
+    <div class="scroll rise" style="--d:4.3s">⌄</div>
+    <div class="hcredit rise" style="--d:4.5s">Mars image: NASA/JPL</div>
+  </div>
+</section>
+
+<section class="page" id="p-inside">
+  <h1 class="ptitle" data-t="iTitle"></h1>
+  <div class="chips" id="chips"></div>
+  <div id="secs"></div>
+</section>
+
+<section class="page" id="p-about">
+  <h1 class="ptitle" data-t="aTitle"></h1>
+  <p class="ab rv greet" id="a-hi"></p>
+  <p class="ab rv txt" id="a-p1"></p>
+  <p class="ab rv txt" id="a-p2"></p>
+  <p class="ab rv txt" id="a-p3"></p>
+  <p class="ab rv txt lead2" id="a-lead"></p>
+  <div class="ai" id="a-ai"></div>
+  <p class="ab rv txt" id="a-p4"></p>
+  <p class="ab rv end" id="a-end"></p>
+  <div class="ab rv" style="text-align:center"><button class="cta" id="a-next" data-go="inside"></button></div>
+</section>
+<section class="page" id="p-game"></section>
+<section class="page" id="p-qr"></section>
+<section class="page" id="p-album"></section>
+</main>
+<div id="sheet" class="sheet" hidden></div>
+
+<nav class="bar" id="bar"></nav>
+
+<script src="safe.js"></script>
+<script src="qr-text.js"></script>
+<script src="content.js"></script>
+<script src="qrdata.js"></script>
+<script src="assets/images.js"></script>
+<script src="media.js"></script>
+<script src="media2.js"></script>
+<script src="media3.js"></script>
+<script src="imgs.js"></script>
+<script src="album-data.js"></script>
+<script src="app.js"></script>
+<script src="assets/vendor/qrcode.js"></script>
+<script src="qr.js"></script>
+<script src="vault.js"></script>
+<script src="fx.js"></script>
+<script src="sky.js"></script>
+<script src="music.js"></script>
+<script src="album.js"></script>
+<script src="dune-host.js"></script>
+<script src="intro.js"></script>
+<script src="pwa.js"></script>
+</body>
+</html>
